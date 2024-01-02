@@ -50,10 +50,20 @@ export async function POST(req: Request) {
     // Get the ID and type
     const { id } = evt.data;
     const eventType = evt.type;
-    console.log("thi is the webhoo id", id);
-    console.log("this is the webhoo type", eventType);
-    console.log(`Webhook with and ID of ${id} and type of ${eventType}`)
-    console.log('Webhook body:', body)
+
+    switch (eventType) {
+        case 'user.created':
+            console.log('User created event:', evt.data);
+            break;
+        case 'user.updated':
+            console.log('User updated event:', evt.data);
+            break;
+        case 'user.deleted':
+            console.log('User deleted event:', evt.data);
+            break;
+        default:
+            console.log('Unhandled event type:', eventType);
+    }
 
     return new Response('yes ooooooo', { status: 200 })
 }
