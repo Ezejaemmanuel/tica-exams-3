@@ -1,5 +1,5 @@
 import * as z from "zod"
-import { Option, Option } from "@prisma/client"
+import { Option } from "@prisma/client"
 import { CompleteExam, relatedExamSchema } from "./index"
 
 export const mathQuestionSchema = z.object({
