@@ -51,7 +51,7 @@ model UserAuth {
   primaryPhoneNumberId  String?
   emailAddresses        Json
   phoneNumbers          Json
-  userId                String   @unique
+  userId                String?  @unique
   user                  User?
 }
 
