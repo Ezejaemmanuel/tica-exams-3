@@ -3,6 +3,7 @@ import { headers } from 'next/headers'
 import { EmailAddressJSON, UserJSON, WebhookEvent } from '@clerk/nextjs/server'
 import { UserAuthCreateInput, UserAuthUpdateInput } from './type';
 import { prisma } from '@/lib/db';
+import { v4 as uuidv4 } from 'uuid';
 // export async function POST(req: Request) {
 
 //     // You can find this in the Clerk Dashboard -> Webhooks -> choose the webhook
@@ -90,6 +91,7 @@ async function createUserAuth(data: UserJSON) {
             emailAddresses: JSON.parse(JSON.stringify(data.email_addresses)),
             phoneNumbers: JSON.parse(JSON.stringify(data.phone_numbers)),
             banned: data.banned,
+            userId: uuidv4(),
             imageUrl: data.image_url,
             createdAt: new Date(data.created_at),
             updatedAt: new Date(data.updated_at),
@@ -105,7 +107,6 @@ async function updateUserAuth(data: UserJSON) {
     const updatedUserAuth = await prisma.userAuth.update({
         where: { id: data.id },
         data: {
-            id: data.id,
             firstName: data.first_name,
             lastName: data.last_name,
             username: data.username,
