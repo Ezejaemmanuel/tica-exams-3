@@ -20,9 +20,205 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// model User {
+//   id                    String           @id @unique @default(cuid())
+//   email                 String           @unique
+//   firstName             String
+//   lastName              String
+//   whatsapp              String
+//   state                 String
+//   country               String
+//   city                  String
+//   homeAddress           String
+//   religion              String
+//   role                  Role             @default(STUDENT)
+//   classLevel            ClassLevel // Add this line
+//   createdAt             DateTime         @default(now())
+//   updatedAt             DateTime         @updatedAt
+//   username              String?
+//   imageUrl              String?
+//   banned                Boolean
+//   primaryEmailAddressId String?
+//   primaryPhoneNumberId  String?
+//   emailAddresses        Json
+//   phoneNumbers          Json
+//   result                Result?
+//   userAnswer            UserAnswer[]
+//   userExam              UserExam[]
+// }
 
-model Computer {
-  id    String @id @default(cuid())
-  brand String
-  cores Int
+model UserAuth {
+  id                    String   @id @unique @default(cuid())
+  email                 String   @unique
+  firstName             String
+  lastName              String
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  username              String?
+  imageUrl              String?
+  banned                Boolean
+  primaryEmailAddressId String?
+  primaryPhoneNumberId  String?
+  emailAddresses        Json
+  phoneNumbers          Json
+  userId                String   @unique
+  user                  User?
+}
+
+model User {
+  id          String       @id @unique @default(cuid())
+  state       String
+  country     String
+  city        String
+  homeAddress String
+  religion    String
+  role        Role         @default(STUDENT)
+  classLevel  ClassLevel // Add this line
+  result      Result?
+  userAnswer  UserAnswer[]
+  userExam    UserExam[]
+  userAuth    UserAuth     @relation(fields: [id], references: [userId])
+}
+
+model Exam {
+  id                      String                   @unique
+  date                    DateTime
+  startTime               DateTime?
+  EndTime                 DateTime?
+  classLevel              ClassLevel // Add this line
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  englishQuestions        EnglishQuestion[]
+  generalStudiesQuestions GeneralStudiesQuestion[]
+  mathQuestions           MathQuestion[]
+  userExam                UserExam[]
+}
+
+model UserExam {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  examId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  examFinished Boolean @default(false)
+  resultId     String? @unique
+  exam         Exam    @relation(fields: [examId], references: [id])
+  result       Result? @relation(fields: [resultId], references: [id])
+  user         User    @relation(fields: [userId], references: [id])
+
+  @@unique([userId, examId])
+}
+
+model Instructions {
+  id           Int      @id @default(1)
+  instructions Json
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model EnglishQuestion {
+  id             String   @id @unique @default(cuid())
+  questionNumber Int
+  question       String
+  optionA        String
+  optionB        String
+  optionC        String
+  optionD        String
+  correctAnswer  Option
+  studentAnswer  Option?
+  examId         String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  exam           Exam     @relation(fields: [examId], references: [id])
+}
+
+model UserAnswer {
+  id             String   @id @unique @default(cuid())
+  userId         String
+  questionId     Int
+  answer         Option
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  questionNumber Int
+  subject        String
+  user           User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, questionId])
+}
+
+model MathQuestion {
+  id             String   @id @unique @default(cuid())
+  questionNumber Int
+  question       String
+  optionA        String
+  optionB        String
+  optionC        String
+  optionD        String
+  correctAnswer  Option
+  studentAnswer  Option?
+  examId         String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  exam           Exam     @relation(fields: [examId], references: [id])
+}
+
+model GeneralStudiesQuestion {
+  id             String   @id @unique @default(cuid())
+  questionNumber Int
+  question       String
+  optionA        String
+  optionB        String
+  optionC        String
+  optionD        String
+  correctAnswer  Option
+  studentAnswer  Option?
+  examId         String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  exam           Exam     @relation(fields: [examId], references: [id])
+}
+
+model Notification {
+  id        String   @id @unique @default(cuid())
+  message   String
+  date      DateTime
+  seen      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Result {
+  id                  String    @id @unique @default(cuid())
+  englishScore        Int
+  mathsScore          Int
+  generalStudiesScore Int
+  totalScore          Int
+  aggregate           Float
+  position            Int
+  passed              Boolean
+  userId              String    @unique
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  userExamId          Int       @unique
+  user                User      @relation(fields: [userId], references: [id])
+  userExam            UserExam?
+}
+
+enum Option {
+  A
+  B
+  C
+  D
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+  SUPERADMIN
+}
+
+enum ClassLevel {
+  JSS1
+  SS1
 }
