@@ -19,7 +19,7 @@ export function addBaseURL(url: string): string {
         return `http://localhost:3000/${url}`;
     } else {
         if (vercelUrl) {
-            return `${vercelUrl}/${url}`;
+            return `/${url}`;
         } else {
             throw new Error('VERCEL_URL or NEXT_PUBLIC_VERCEL_URL environment variable is not set');
         }
