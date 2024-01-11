@@ -9,14 +9,15 @@ import PhoneInput from 'react-phone-number-input'
 
 interface DobGenderProps {
     control: Control<FieldValues>;
+    key: string;
 }
 
-const DobGender: React.FC<DobGenderProps> = ({ control }) => {
+const DobGender: React.FC<DobGenderProps> = ({ control, key }) => {
     const { setValue, watch } = useFormContext(); // useFormContext hook to access setValue
     const phoneNumberValue = watch("phoneNumber"); // This will watch the phoneNumber field for changes
     const [phone, setPhone] = useState(phoneNumberValue);
     return (
-        <div className="max-w-xs p-6 mx-auto mt-6 bg-slate-100 dark:bg-gray-900 rounded-lg shadow-lg md:max-w-lg">
+        <div key={key} className="max-w-xs p-6 mx-auto mt-6 bg-slate-100 dark:bg-gray-900 rounded-lg shadow-lg md:max-w-lg">
             <div className="relative inline-block w-64 mb-10">
                 <FormField
                     control={control}
