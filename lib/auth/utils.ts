@@ -1,3 +1,4 @@
+import { currentUser } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
@@ -25,8 +26,20 @@ export const getUserAuth = async () => {
     return { session: null };
   }
 };
-
+export const getUserId = () => {
+  const { userId } = auth();
+  return userId;
+}
 export const checkAuth = async () => {
   const { userId } = auth();
   if (!userId) redirect("/sign-in");
 };
+
+export const getUserAuthInfo = async () => {
+  const user = await currentUser();
+  if (user) {
+    return user;
+
+  }
+  throw new Error("No User Logged In");
+}

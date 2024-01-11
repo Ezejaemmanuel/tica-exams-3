@@ -6,8 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // model User {
@@ -56,18 +57,25 @@ model UserAuth {
 }
 
 model User {
-  id          String       @id @unique @default(cuid())
-  state       String
-  country     String
-  city        String
-  homeAddress String
-  religion    String
-  role        Role         @default(STUDENT)
-  classLevel  ClassLevel // Add this line
-  result      Result?
-  userAnswer  UserAnswer[]
-  userExam    UserExam[]
-  userAuth    UserAuth     @relation(fields: [id], references: [userId])
+  id                            String       @id @unique @default(cuid())
+  name                          String
+  officialEmail                 String       @unique
+  class                         String
+  dob                           DateTime
+  officialPhoneOrWhatsappNumber String
+  fullAddress                   String
+  locality                      String
+  city                          String
+  state                         String
+  country                       String
+  homeAddress                   String
+  role                          Role         @default(STUDENT)
+  classLevel                    ClassLevel // Add this line
+  result                        Result?
+  userAnswer                    UserAnswer[]
+  userExam                      UserExam[]
+  userAuthId                    String       @unique
+  userAuth                      UserAuth?    @relation(fields: [userAuthId], references: [id])
 }
 
 model Exam {

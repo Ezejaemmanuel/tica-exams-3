@@ -40,9 +40,12 @@
 // export default Header;
 
 
-import React from 'react'
+import React, { Suspense } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { SignedIn, SignedOut } from '@clerk/nextjs'
+import RegisteredOrNot from './registeredOrNot'
+import ButtonSkeleton from './buttonSkeleton'
 
 const Header = () => {
     return (
@@ -68,18 +71,10 @@ const Header = () => {
                     <p className="mt-4 max-w-lg sm:text-xl/relaxed text-black">
                         We provide a seamless and convenient platform for prospective students living far from our college to write entrance examinations online.
                     </p>
+                    <Suspense fallback={<ButtonSkeleton />}>
+                        <RegisteredOrNot />
+                    </Suspense>
 
-                    <div className="mt-8 flex flex-wrap gap-4 text-center">
-                        <Link href="/register" className="block w-full rounded bg-red-600 px-12 py-3 text-sm font-medium text-white shadow hover:bg-red-700 focus:outline-none focus:ring active:bg-red-500 sm:w-auto">
-                            Register Now
-
-                        </Link>
-
-                        <Link href="/learn-more" className="block w-full rounded bg-black px-12 py-3 text-sm font-medium text-white shadow hover:text-rose-700 focus:outline-none focus:ring active:text-rose-500 sm:w-auto">
-                            Learn More
-
-                        </Link>
-                    </div>
                 </div>
             </div>
         </div>

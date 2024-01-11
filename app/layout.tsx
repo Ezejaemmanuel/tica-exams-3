@@ -6,6 +6,7 @@ import { Toaster } from '@/components/ui/sonner';
 import Footer from '@/components/footer';
 import { ThemeProvider } from '@/components/dark-mode-toogle';
 import Navbar from '@/components/navbar/navbar';
+import { Providers } from './provider';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,23 +21,27 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
+    <ClerkProvider>
 
-        >
-          <ClerkProvider>
-            <Navbar />
-            {children}
-            <Footer />
-            <Toaster />
-          </ClerkProvider>
-        </ThemeProvider>
-      </body>
-    </html>
+      <html lang="en">
+        <body className={inter.className}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+
+          >
+            <Providers>
+              <Navbar />
+              {children}
+              <Footer />
+              <Toaster richColors duration={7000} className='text-yellow-500' />
+            </Providers>
+          </ThemeProvider>
+        </body>
+      </html>
+    </ClerkProvider>
+
   )
 }

@@ -91,7 +91,7 @@ async function createUserAuth(data: UserJSON) {
             emailAddresses: JSON.parse(JSON.stringify(data.email_addresses)),
             phoneNumbers: JSON.parse(JSON.stringify(data.phone_numbers)),
             banned: data.banned,
-            userId: uuidv4(),
+            userId: data.id,
             imageUrl: data.image_url,
             createdAt: new Date(data.created_at),
             updatedAt: new Date(data.updated_at),
@@ -187,6 +187,7 @@ export async function POST(req: Request) {
         default:
             console.log('Unhandled event type:', eventType);
     }
+
 
     return new Response('yes ooooooo', { status: 200 });
 }
