@@ -120,10 +120,10 @@ export async function GET(req: NextRequest) {
         }
 
         console.log('Checking if all user fields are not null.');
-        const userFieldsAreNotNull = Object.values(user).some(field => !field);
-        console.log('Are all user fields not null?', userFieldsAreNotNull);
+        // const userFieldsAreNotNull = Object.values(user).some(field => !field);
+        // console.log('Are all user fields not null?', userFieldsAreNotNull);
 
-        if (!userFieldsAreNotNull) {
+        if (!user.city || !user.officialEmail || !user.id || !user.name) {
             console.log('One or more user fields are null, returning false.');
             return NextResponse.json({ message: 'false' }, { status: 200 });
         }

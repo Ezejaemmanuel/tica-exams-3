@@ -55,7 +55,7 @@ export const MainForm: React.FC = () => {
 
             toast.loading(` successfully registered ....redirecting to dashboard in 2 seconds`, { duration: 2000, important: true })
             setTimeout(() => {
-                router.push('/dashboard');
+                router.push('/student-dashboard');
             }, 2000);
 
         },
