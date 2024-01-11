@@ -1,4 +1,3 @@
-import { Select } from '@/components/ui/select';
 // pages/api/register.ts
 
 import { NextRequest, NextResponse } from 'next/server';
