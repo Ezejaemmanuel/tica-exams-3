@@ -11,33 +11,6 @@ datasource db {
   // directUrl = env("DATABASE_URL")
 }
 
-// model User {
-//   id                    String           @id @unique @default(cuid())
-//   email                 String           @unique
-//   firstName             String
-//   lastName              String
-//   whatsapp              String
-//   state                 String
-//   country               String
-//   city                  String
-//   homeAddress           String
-//   religion              String
-//   role                  Role             @default(STUDENT)
-//   classLevel            ClassLevel // Add this line
-//   createdAt             DateTime         @default(now())
-//   updatedAt             DateTime         @updatedAt
-//   username              String?
-//   imageUrl              String?
-//   banned                Boolean
-//   primaryEmailAddressId String?
-//   primaryPhoneNumberId  String?
-//   emailAddresses        Json
-//   phoneNumbers          Json
-//   result                Result?
-//   userAnswer            UserAnswer[]
-//   userExam              UserExam[]
-// }
-
 model UserAuth {
   id                    String   @id @unique @default(cuid())
   email                 String   @unique
@@ -117,7 +90,7 @@ model Instructions {
 
 model EnglishQuestion {
   id             String   @id @unique @default(cuid())
-  questionNumber Int
+  questionNumber Int      @unique
   question       String
   optionA        String
   optionB        String
@@ -147,7 +120,7 @@ model UserAnswer {
 
 model MathQuestion {
   id             String   @id @unique @default(cuid())
-  questionNumber Int
+  questionNumber Int      @unique
   question       String
   optionA        String
   optionB        String
@@ -163,7 +136,7 @@ model MathQuestion {
 
 model GeneralStudiesQuestion {
   id             String   @id @unique @default(cuid())
-  questionNumber Int
+  questionNumber Int      @unique
   question       String
   optionA        String
   optionB        String

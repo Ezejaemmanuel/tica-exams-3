@@ -123,10 +123,10 @@ export async function GET(req: NextRequest) {
         // const userFieldsAreNotNull = Object.values(user).some(field => !field);
         // console.log('Are all user fields not null?', userFieldsAreNotNull);
 
-        if (!user.city || !user.officialEmail || !user.id || !user.name) {
-            console.log('One or more user fields are null, returning false.');
-            return NextResponse.json({ message: 'false' }, { status: 200 });
-        }
+        // if (!user.city || !user.officialEmail || !user.id || !user.name) {
+        //     console.log('One or more user fields are null, returning false.');
+        //     return NextResponse.json({ message: 'false' }, { status: 200 });
+        // }
 
         console.log('User is fully registered, returning true.');
         return NextResponse.json({ message: 'true' }, { status: 200 });

@@ -4,11 +4,14 @@ import { addBaseURL } from '../addBaseUrl';
 import { toast } from 'sonner';
 
 async function fetchUserRegistered(): Promise<boolean> {
-    const url = addBaseURL("api/register")
+    const url = addBaseURL("api/register");
+    console.log("this is the url ", url);
     const res = await fetch(url);
 
     if (!res.ok) {
-        throw new Error('Network response was not ok');
+        const data = await res.json();
+        throw new Error(data.error);
+
     }
     const data = await res.json();
     return data.message === 'true';

@@ -6,6 +6,10 @@ const nextConfig = {
                 protocol: 'https',
                 hostname: 'tansicollege.edu.ng',
             },
+            {
+                protocol: "https",
+                hostname: "img.clerk.com",
+            }
 
         ],
     },

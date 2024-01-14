@@ -6,7 +6,7 @@ import { authMiddleware } from "@clerk/nextjs";
 // export default authMiddleware({});
 export default authMiddleware({
   // "/" will be accessible to all users
-  publicRoutes: ["/", "/api/webhook", "/api/register", "/register", "/tica-exams-3-64dlonnwe-ezejaemmanuel.vercel.app/api/register"]
+  publicRoutes: ["/", "/api/webhook", "/api/register", "/register", "/tica-exams-3-64dlonnwe-ezejaemmanuel.vercel.app/api/register", "/api/manual-setting-questions"]
 });
 
 
