@@ -11,6 +11,7 @@ export type Question = {
     optionC: string;
     optionD: string;
     correctAnswer: string;
+    examId: string;
 };
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
@@ -45,6 +46,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
                         optionB: true,
                         optionC: true,
                         optionD: true,
+                        examId: true,
                         correctAnswer: true,
                     },
                 });
@@ -59,6 +61,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
                         optionC: true,
                         optionD: true,
                         correctAnswer: true,
+                        examId: true,
+
                     },
                 });
             } else if (subject === 'generalquestions') {
@@ -72,6 +76,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
                         optionC: true,
                         optionD: true,
                         correctAnswer: true,
+                        examId: true,
+
                     },
                 });
             } else {
