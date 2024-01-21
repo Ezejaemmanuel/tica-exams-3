@@ -10,79 +10,10 @@ import { Badge } from "@/components/ui/badge"
 import { SVGProps } from "react"
 
 
-export default function Component() {
+export default function AdminDashboard() {
+
     return (
-        <div className="flex flex-col md:flex-row bg-white dark:bg-gray-800">
-            <nav className="hidden md:flex flex-col w-64 px-4 py-8 bg-gray-50 dark:bg-gray-900">
-                <h2 className="text-2xl font-semibold text-gray-800 dark:text-white">Resend</h2>
-                <div className="mt-8">
-                    <ul className="space-y-2">
-                        <li>
-                            <a
-                                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-                                href="#"
-                            >
-                                <HomeIcon className="w-6 h-6 text-gray-500 dark:text-gray-400" />
-                                <span className="ml-3">Overview</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                className="flex items-center p-2 text-base font-normal text-gray-900 bg-gray-100 rounded-lg dark:text-white dark:bg-gray-700"
-                                href="#"
-                            >
-                                <MailboxIcon className="w-6 h-6 text-gray-500 dark:text-gray-400" />
-                                <span className="ml-3">Emails</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-                                href="#"
-                            >
-                                <GlobeIcon className="w-6 h-6 text-gray-500 dark:text-gray-400" />
-                                <span className="ml-3">Domains</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-                                href="#"
-                            >
-                                <FileTextIcon className="w-6 h-6 text-gray-500 dark:text-gray-400" />
-                                <span className="ml-3">Logs</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-                                href="#"
-                            >
-                                <KeyIcon className="w-6 h-6 text-gray-500 dark:text-gray-400" />
-                                <span className="ml-3">API Keys</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-                                href="#"
-                            >
-                                <WebhookIcon className="w-6 h-6 text-gray-500 dark:text-gray-400" />
-                                <span className="ml-3">Webhooks</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-                                href="#"
-                            >
-                                <CogIcon className="w-6 h-6 text-gray-500 dark:text-gray-400" />
-                                <span className="ml-3">Settings</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+        <div className="flex flex-col md:flex-row w-full ">
             <main className="flex-1">
                 <div className="px-4 py-8">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between">

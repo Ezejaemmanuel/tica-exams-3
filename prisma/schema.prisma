@@ -55,7 +55,7 @@ model Exam {
   id                      String                   @unique
   date                    DateTime
   startTime               DateTime?
-  EndTime                 DateTime?
+  lengthOfExam            Int?
   classLevel              ClassLevel // Add this line
   createdAt               DateTime                 @default(now())
   updatedAt               DateTime                 @updatedAt
@@ -66,9 +66,9 @@ model Exam {
 }
 
 model UserExam {
-  id        Int      @id @default(autoincrement())
+  id        String
   userId    String
-  examId    String
+  examId    String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

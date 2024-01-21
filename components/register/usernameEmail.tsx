@@ -9,12 +9,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 
 interface UserNameEmailProps {
     control: Control<FieldValues>;
-    key: string;
+    key_: string;
 }
 
-const UserNameEmail: React.FC<UserNameEmailProps> = ({ control, key }) => {
+const UserNameEmail: React.FC<UserNameEmailProps> = ({ control, key_ }) => {
     return (
-        <div key={key} className="max-w-xs p-6 mx-auto mt-6 bg-slate-100 dark:bg-gray-900 rounded-lg shadow-lg md:max-w-lg">
+        <div key={key_} className="max-w-xs p-6 mx-auto mt-6 bg-slate-100 dark:bg-gray-900 rounded-lg shadow-lg md:max-w-lg">
             <div className="mb-10">
                 <FormField
                     control={control}

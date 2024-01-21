@@ -1,5 +1,43 @@
-i want you too give me two code files...first of all a tenstack reactquery hook that would use usesuspensequery and usesuspensequeryresult that would be very similar to this hook that would get all the information of the user....first of all you would create a nextjs api endpoibnt ..i meant nextjs 13.4 api endpoint that uses async GET as it is in nextjs 13.4 app router and that usses 
-return NextResponse.json as in the refrence code that i am giving you....it would query the prisma database and returrn the user model ...and would also handle eevery error very  well and also it  would then give me a hook that i can use to get the code as it is in the refrence code that i would give you // This is your Prisma schema file,
+using these refrence code that i am going to give you ....i want you to give me the nextjs api endpoint and tenstack react query hook that is similar with the refrence code that i would give you .....the nextjs api endpoint returns all the questions for a particular subject of a particular examid that it would recieve as a searchParams
+use these code i would give you below as refrence codes....the nextjs api endpoint should contains async GET as it is in the refrence code and in nextjs 13.4 app router and also how it used return NextResponse.json  and the tenstack react query hook that would query and return the data make sure it is 
+strictly typed with typescript and that it has the queryKey and queryFn as in the refrence code and also do not forget how it used usesuspensquery and usesuspensequeryresult ...and also do not forget to use kv vercel kv redis for caching the values and how it was used in the refrence code that i gave you 
+// hooks/useExamStatus.ts
+import { ExamStatus } from '@/app/api/exam-status/aside-functions';
+import { UseSuspenseQueryResult, useSuspenseQuery } from '@tanstack/react-query';
+import { addBaseURL } from '../addBaseUrl';
+// types/ExamStatusTypes.ts
+
+
+export interface ExamStatusResponse {
+    status: ExamStatus;
+    examDate?: Date;
+    length?: number;
+}
+
+async function fetchExamStatus({ queryKey }: { queryKey: [string, string] }): Promise<ExamStatusResponse> {
+    const [, classLevel] = queryKey;
+    const url = addBaseURL(`/api/exam-status?classLevel=${classLevel}`);
+    const response = await fetch(url);
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error);
+    }
+    return response.json();
+}
+
+
+export function useExamStatus(classLevel: 'jss1' | 'ss1'): UseSuspenseQueryResult<ExamStatusResponse, Error> {
+    return useSuspenseQuery({
+        queryKey: ['examStatus', classLevel],
+        queryFn: fetchExamStatus,
+        staleTime: 1000 * 60 * 60 * 24,
+        // 24 hours
+
+    });
+}
+and
+// This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
@@ -8,35 +46,9 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("DIRECT_URL")
+  // directUrl = env("DATABASE_URL")
 }
-
-// model User {
-//   id                    String           @id @unique @default(cuid())
-//   email                 String           @unique
-//   firstName             String
-//   lastName              String
-//   whatsapp              String
-//   state                 String
-//   country               String
-//   city                  String
-//   homeAddress           String
-//   religion              String
-//   role                  Role             @default(STUDENT)
-//   classLevel            ClassLevel // Add this line
-//   createdAt             DateTime         @default(now())
-//   updatedAt             DateTime         @updatedAt
-//   username              String?
-//   imageUrl              String?
-//   banned                Boolean
-//   primaryEmailAddressId String?
-//   primaryPhoneNumberId  String?
-//   emailAddresses        Json
-//   phoneNumbers          Json
-//   result                Result?
-//   userAnswer            UserAnswer[]
-//   userExam              UserExam[]
-// }
 
 model UserAuth {
   id                    String   @id @unique @default(cuid())
@@ -82,7 +94,7 @@ model Exam {
   id                      String                   @unique
   date                    DateTime
   startTime               DateTime?
-  EndTime                 DateTime?
+  lengthOfExam            Int?
   classLevel              ClassLevel // Add this line
   createdAt               DateTime                 @default(now())
   updatedAt               DateTime                 @updatedAt
@@ -93,9 +105,9 @@ model Exam {
 }
 
 model UserExam {
-  id        Int      @id @default(autoincrement())
+  id        String
   userId    String
-  examId    String
+  examId    String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -117,7 +129,7 @@ model Instructions {
 
 model EnglishQuestion {
   id             String   @id @unique @default(cuid())
-  questionNumber Int
+  questionNumber Int      @unique
   question       String
   optionA        String
   optionB        String
@@ -147,7 +159,7 @@ model UserAnswer {
 
 model MathQuestion {
   id             String   @id @unique @default(cuid())
-  questionNumber Int
+  questionNumber Int      @unique
   question       String
   optionA        String
   optionB        String
@@ -163,7 +175,7 @@ model MathQuestion {
 
 model GeneralStudiesQuestion {
   id             String   @id @unique @default(cuid())
-  questionNumber Int
+  questionNumber Int      @unique
   question       String
   optionA        String
   optionB        String
@@ -220,166 +232,144 @@ enum ClassLevel {
   JSS1
   SS1
 }
- and
- import { Select } from '@/components/ui/select';
-// pages/api/register.ts
+and
+type KVOperation<T> = () => Promise<T>;
+
+// Helper function to perform KV operations safely
+export async function safeKVOperation<T>(operation: KVOperation<T>): Promise<T | null> {
+    try {
+        const result = await operation();
+        console.log('KV operation successful:', result);
+        return result;
+    } catch (error) {
+        console.error('KV operation error:', error);
+        // Return null to indicate the operation did not succeed
+        return null;
+    }
+}
+// lib/cacheHandlers.ts
+
+import { kv } from '@vercel/kv';
+import { safeKVOperation } from '../../safeKvOperation';
+import { ExamStatus } from './route';
+
+export async function getExamStatusCache(cacheKey: string): Promise<ExamStatus[] | null> {
+    return safeKVOperation(() => kv.get(cacheKey));
+}
+
+export const setExamStatusCache = async (cacheKey: string, data: any) => {
+    return safeKVOperation(() => kv.set(cacheKey, data, { ex: 60 * 60 * 24 }));
+};
+
+export const deleteExamStatusCache = async (cacheKey: string) => {
+    return safeKVOperation(() => kv.del(cacheKey));
+};
+// pages/api/exam-status.ts
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { getUserId } from '@/lib/auth/utils';
-import { FormData } from '@/components/register/mainForm';
+import { deleteExamStatusCache, getExamStatusCache, setExamStatusCache } from './cache';
+import { Exam } from '@prisma/client';
+// types/ExamStatusTypes.ts
 
+export enum ExamStatusEnum {
+    NoExamYet = 'NO_EXAM_YET',
+    ExamData = 'EXAM_DATA',
+}
 
+import { Exam as PrismaExam, EnglishQuestion, GeneralStudiesQuestion, MathQuestion, UserExam } from '@prisma/client';
 
-export async function POST(request: NextRequest) {
-    const userId = getUserId();
+export type ExamStatus = {
+    exam: {
+        id: PrismaExam['id'];
+        classLevel: PrismaExam['classLevel'];
+        date: PrismaExam['date'];
+        startTime: PrismaExam['startTime'];
+        lengthOfExam: PrismaExam['lengthOfExam'];
+        englishQuestions: Array<{ id: EnglishQuestion['id'] }>;
+        generalStudiesQuestions: Array<{ id: GeneralStudiesQuestion['id'] }>;
+        mathQuestions: Array<{ id: MathQuestion['id'] }>;
+        userExam: Array<{ id: UserExam['id'] }>;
+    };
+    englishQuestionsCount: number;
+    generalStudiesQuestionsCount: number;
+    mathQuestionsCount: number;
+    usersWritingExamCount: number;
+};
 
-    if (!userId) {
-        return NextResponse.json({ error: 'User is not authenticated.' }, { status: 401 });
-    }
-    const formData: FormData = await request.json();
-    console.log("see the data that is coming from the frontend ", formData);
-
-    // Convert class to lowercase and map to ClassLevel enum
-    const classLevel = formData.class.toLowerCase() === 'jss1' ? 'JSS1' : formData.class.toLowerCase() === 'ss1' ? 'SS1' : null;
-    if (!classLevel) {
-        return NextResponse.json({ error: 'Invalid class level.' }, { status: 400 });
-    }
+export async function GET(req: NextRequest): Promise<NextResponse> {
+    const revalidate = req.nextUrl.searchParams.get('revalidate') === 'true';
+    const cacheKey = 'tica:exam-status';
 
     try {
-        // Check if a user with the same userAuthId already exists
-        const existingUser = await prisma.user.findUnique({
-            where: { id: userId },
-            select: {
-                id: true,
-                // other fields you want to select
+        if (revalidate) {
+
+            console.log('Revalidating cache: deleting and fetching fresh data');
+            await deleteExamStatusCache(cacheKey);
+        }
+
+        // Define a type for the exam status object
+
+        // Use the type for the examStatus variable
+        let examStatus: ExamStatus[] | null = revalidate ? null : await getExamStatusCache(cacheKey);
+
+
+        if (!examStatus) {
+            console.log('Fetching exam status from database');
+            const exams = await prisma.exam.findMany({
+                select: {
+                    id: true,
+                    classLevel: true,
+                    date: true,
+                    startTime: true,
+                    lengthOfExam: true,
+
+                    // Replace with actual fields you need from the exam
+                    englishQuestions: {
+                        select: {
+                            id: true, // Replace with actual fields you need from englishQuestions
+                        }
+                    },
+                    generalStudiesQuestions: {
+                        select: {
+                            id: true, // Replace with actual fields you need from generalStudiesQuestions
+                        }
+                    },
+                    mathQuestions: {
+                        select: {
+                            id: true, // Replace with actual fields you need from mathQuestions
+                        }
+                    },
+                    userExam: {
+                        select: {
+                            id: true, // Replace with actual fields you need from userExam
+                        }
+                    },
+                },
+            });
+
+            if (exams.length === 0) {
+                console.log('No exams found');
+                return NextResponse.json({ status: ExamStatusEnum.NoExamYet });
             }
-        });
-        const existingUserAuth = await prisma.userAuth.findUnique({
-            where: { id: userId },
-            select: {
-                id: true,
-                // other fields you want to select
-            }
-        });
-        if (!existingUserAuth) {
-            return NextResponse.json({ error: "User has not signed in" }, { status: 404 });
-        }
-        if (existingUser) {
-            // Return an error if the user already exists
-            return NextResponse.json({ error: 'User has already been registered. Go to the dashboard to update your registration values' }, { status: 409 });
+
+            examStatus = exams.map(exam => ({
+                exam: exam,
+                englishQuestionsCount: exam.englishQuestions.length,
+                generalStudiesQuestionsCount: exam.generalStudiesQuestions.length,
+                mathQuestionsCount: exam.mathQuestions.length,
+                usersWritingExamCount: exam.userExam.length,
+            }));
+
+            await setExamStatusCache(cacheKey, examStatus);
         }
 
-        // Create the new user with all fields and mapped classLevel
-        const newUser = await prisma.user.create({
-            data: {
-                id: userId,
-                officialEmail: formData.email,
-                name: formData.name,
-                class: formData.class,
-                dob: new Date(formData.dob),
-                classLevel: classLevel, // Use the mapped classLevel
-                officialPhoneOrWhatsappNumber: formData.phoneNumber,
-                fullAddress: formData.address,
-                locality: formData.locality,
-                city: formData.city,
-                state: formData.state,
-                country: formData.country,
-                homeAddress: formData.address,
-                // Add any other fields that are required by the User model
-                userAuthId: userId,
-            },
-        });
-
-        return NextResponse.json({ message: "registeration succesfully 0000000" }, { status: 200 });
-
+        return NextResponse.json({ status: ExamStatusEnum.ExamData, data: examStatus });
     } catch (error) {
-        console.error('Request error', error);
-        if (error instanceof Error) {
-            return NextResponse.json({ error: error.message }, { status: 500 });
-        } else {
-            // If it's not an Error instance, you might want to handle it differently
-            return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
-        }
+        console.error('Error fetching exam status:', error);
+        return NextResponse.json({ error: 'Error fetching exam status' }, { status: 500 });
     }
 }
 
 
-// pages/api/register.ts
 
-
-export async function GET(req: NextRequest) {
-    console.log('Received a request to check user registration status.');
-
-    const userId = getUserId();
-    console.log('Retrieved userId:', userId);
-
-    if (!userId) {
-        console.log('No userId found, returning false.');
-        return NextResponse.json({ message: 'false' }, { status: 200 });
-    }
-
-    try {
-        console.log('Looking up UserAuth with userId:', userId);
-        const userAuth = await prisma.userAuth.findUnique({
-            where: { id: userId },
-            select: { id: true },
-        });
-        console.log('UserAuth result:', userAuth);
-
-        // if (!userAuth) {
-        //     console.log('UserAuth not found, returning false.');
-        //     return NextResponse.json({ message: 'false' }, { status: 200 });
-        // }
-
-        console.log('Looking up User with userId:', userId);
-        const user = await prisma.user.findUnique({
-            where: { id: userId },
-        });
-        console.log('User result:', user);
-
-        if (!user) {
-            console.log('User not found, returning false.');
-            return NextResponse.json({ message: 'false' }, { status: 200 });
-        }
-
-        console.log('Checking if all user fields are not null.');
-        const userFieldsAreNotNull = Object.values(user).some(field => !field);
-        console.log('Are all user fields not null?', userFieldsAreNotNull);
-
-        if (!userFieldsAreNotNull) {
-            console.log('One or more user fields are null, returning false.');
-            return NextResponse.json({ message: 'false' }, { status: 200 });
-        }
-
-        console.log('User is fully registered, returning true.');
-        return NextResponse.json({ message: 'true' }, { status: 200 });
-    } catch (error) {
-        console.error('Request error', error);
-        return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
-    }
-}
-
-
-and
-// hooks/useUserRegistered.ts
-import { useSuspenseQuery, UseSuspenseQueryResult } from '@tanstack/react-query';
-import { addBaseURL } from '../addBaseUrl';
-
-async function fetchUserRegistered(): Promise<boolean> {
-    const url = addBaseURL("api/register")
-    const res = await fetch(url);
-    if (!res.ok) {
-        throw new Error('Network response was not ok');
-    }
-    const data = await res.json();
-    return data.message === 'true';
-}
-
-export function useUserRegistered(): UseSuspenseQueryResult<boolean, Error> {
-    return useSuspenseQuery({
-        queryKey: ['userRegistered'],
-        queryFn: fetchUserRegistered,
-        staleTime: 1000 * 60 * 60 * 24, // 24 hours
-    });
-}

@@ -7,6 +7,7 @@ export default async function Home() {
   const userAuth = await getUserAuth();
   return (
     <main className="">
+
       <Header />
       <RegistrationGuide />
     </main>

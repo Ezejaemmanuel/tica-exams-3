@@ -7,7 +7,7 @@ import React, { useState } from 'react'
 import Image from 'next/image';
 import { ExamNotAvailable, ExamAvailable, ExamOngoing, ExamCompleted } from '@/components/card-status';
 import { Button } from '@/components/ui/button';
-import { ExamStatus } from '@/components/exam-status/aside';
+import { ExamStatusPage } from '@/components/exam-status/aside';
 const MainContents = () => {
     const { isLoaded, isSignedIn, user } = useUser();
     const [isOpen, setIsOpen] = useState(false);
@@ -63,6 +63,10 @@ const MainContents = () => {
                         <Button className="w-full px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring dark:bg-red-700 dark:hover:bg-red-800 sm:w-auto md:w-auto lg:w-auto xl:w-auto" name="button3">Button 3</Button>
                         <Button className="w-full px-4 py-2 text-white bg-yellow-500 rounded hover:bg-yellow-600 focus:outline-none focus:ring dark:bg-yellow-700 dark:hover:bg-yellow-800 sm:w-auto md:w-auto lg:w-auto xl:w-auto" name="button4">Button 4</Button>
                     </div>
+                    <ExamStatusPage
+                        isOpen={isOpen}
+                        setIsOpen={setIsOpen}
+                        classLevel={userInfo.classLevel.toLowerCase() as "jss1" | "ss1"} />
                 </CardContent>
 
             </Card>
@@ -104,11 +108,7 @@ const MainContents = () => {
                     </p>
                 </CardContent>
             </Card>
-            <ExamStatus
-                examState="completed"
-                isOpen={isOpen}
-                setIsOpen={setIsOpen}
-            />
+
         </main>
     )
 }

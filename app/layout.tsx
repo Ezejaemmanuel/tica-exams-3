@@ -7,6 +7,7 @@ import Footer from '@/components/footer';
 import { ThemeProvider } from '@/components/dark-mode-toogle';
 import Navbar from '@/components/navbar/navbar';
 import { Providers } from './provider';
+import AdminMessage from './adminMessage';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -35,6 +36,7 @@ export default function RootLayout({
           >
             <Providers>
               <Navbar />
+              <AdminMessage />
               {children}
               <Footer />
               <Toaster richColors duration={7000} className='text-yellow-500' />

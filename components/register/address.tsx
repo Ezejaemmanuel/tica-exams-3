@@ -7,12 +7,12 @@ import { Input } from '@/components/ui/input';
 
 interface AddressProps {
     control: Control<FieldValues>;
-    key: string;
+    key_: string;
 }
 
-const Address: React.FC<AddressProps> = ({ control, key }) => {
+const Address: React.FC<AddressProps> = ({ control, key_ }) => {
     return (
-        <div key={key} className="w-full max-w-lg px-8 pt-6 pb-8 mx-auto mb-4 bg-slate-100 dark:bg-gray-900 rounded shadow-md">
+        <div key={key_} className="w-full max-w-lg px-8 pt-6 pb-8 mx-auto mb-4 bg-slate-100 dark:bg-gray-900 rounded shadow-md">
             <div className="flex flex-wrap mb-6 -mx-3">
                 <div className="w-full px-3 mb-6 md:w-1/2 md:mb-0">
                     <FormField

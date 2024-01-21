@@ -5,15 +5,17 @@ import CustomCard from './customCard';
 
 interface StatusComponentProps {
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    content: string;
 }
 
+
 // Exam Not Available Component
-export const ExamNotAvailable: React.FC<StatusComponentProps> = ({ setIsOpen }) => {
+export const ExamNotAvailable: React.FC<StatusComponentProps> = ({ setIsOpen, content }) => {
     return (
         <CustomCard
             icon={FaTimesCircle}
             title="Exam Not Available"
-            content="The exam is not available yet. Please check back later."
+            content={content}
             buttonOneText="Go Back"
             buttonOneAction={() => setIsOpen(false)}
             cardColor="bg-rose-500"
@@ -24,12 +26,12 @@ export const ExamNotAvailable: React.FC<StatusComponentProps> = ({ setIsOpen }) 
 };
 
 // Exam Available Component
-export const ExamAvailable: React.FC<StatusComponentProps> = ({ setIsOpen }) => {
+export const ExamAvailable: React.FC<StatusComponentProps> = ({ setIsOpen, content }) => {
     return (
         <CustomCard
             icon={FaCheckCircle}
             title="Exam Available"
-            content="An exam is available. Please accept the exam to see the date and details."
+            content={content}
             buttonOneText="Accept"
             buttonTwoText="Go Back"
             buttonOneAction={() => {/* Accept exam action */ }}
@@ -43,12 +45,12 @@ export const ExamAvailable: React.FC<StatusComponentProps> = ({ setIsOpen }) => 
 };
 
 // Exam Ongoing Component
-export const ExamOngoing: React.FC<StatusComponentProps & { elapsedTime: string }> = ({ elapsedTime, setIsOpen }) => {
+export const ExamOngoing: React.FC<StatusComponentProps> = ({ content, setIsOpen }) => {
     return (
         <CustomCard
             icon={FaPlayCircle}
             title="Exam Ongoing"
-            content={`The exam is currently ongoing. Time elapsed: ${elapsedTime}`}
+            content={content}
             buttonOneText="Start Exam"
             buttonOneAction={() => {/* Start exam action */ }}
             cardColor="bg-red-500 animate-pulse"
@@ -59,12 +61,12 @@ export const ExamOngoing: React.FC<StatusComponentProps & { elapsedTime: string 
 };
 
 // Exam Completed Component
-export const ExamCompleted: React.FC<StatusComponentProps> = ({ setIsOpen }) => {
+export const ExamCompleted: React.FC<StatusComponentProps> = ({ setIsOpen, content }) => {
     return (
         <CustomCard
             icon={FaRegCheckCircle}
             title="Exam Completed"
-            content="Congratulations! You have completed the exam. Check your results."
+            content={content}
             buttonOneText="Check Results"
             buttonTwoText="Go Back"
             buttonOneAction={() => {/* Check results action */ }}

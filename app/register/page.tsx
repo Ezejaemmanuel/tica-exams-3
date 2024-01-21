@@ -1,6 +1,7 @@
 import MainForm from '@/components/register/mainForm';
 import { getUserId } from '@/lib/auth/utils';
 import { prisma } from '@/lib/db';
+import { kv } from '@vercel/kv';
 import { redirect } from 'next/navigation';
 import React from 'react';
 
@@ -13,13 +14,10 @@ const Register = async () => {
 
     }
 
-    // Fetch the user from the database.
-    const user = await prisma.user.findUnique({
-        where: { id: userId },
-    });
-    console.log("this is the useer data ", user);
+    const isRegistered = await kv.get(`isRegistered:${userId}`);
+
     // If the user is not found or any user field is falsy, render the MainForm component.
-    if (!user || Object.values(user).some(field => !field)) {
+    if (!isRegistered) {
         console.log('User not found or one or more user fields are falsy, rendering MainForm.');
         return <MainForm />;
     }
