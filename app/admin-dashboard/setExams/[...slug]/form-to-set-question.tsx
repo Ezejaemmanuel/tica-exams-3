@@ -9,54 +9,64 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { FormValues, useFormStore } from "@/lib/store/zuestand-store";
+import { useEffect } from "react";
 
-interface FormDefaultValues {
-    question: string;
-    optionA: string;
-    optionB: string;
-    optionC: string;
-    optionD: string;
-    answer: 'A' | 'B' | 'C' | 'D';
-}
+
 
 // Define the props for the SetQuestionsCard component
 interface SetQuestionsCardProps {
-    defaultValues: FormDefaultValues;
     questionNumber: number;
     questionSubject: string;
     examId: string;
 }
 
-export default function SetQuestionsCard({ defaultValues, questionNumber, questionSubject, examId }: SetQuestionsCardProps) {
-    const formSchema = z.object({
-        question: z.string().min(1, 'Question is required'),
-        optionA: z.string().min(1, 'Option A is required'),
-        optionB: z.string().min(1, 'Option B is required'),
-        optionC: z.string().min(1, 'Option C is required'),
-        optionD: z.string().min(1, 'Option D is required'),
-        answer: z.enum(['A', 'B', 'C', 'D']),
-    });
 
-    // Create a form instance with validation using Zod
-    const form = useForm({
+interface SetQuestionsCardProps {
+    questionNumber: number;
+    questionSubject: string;
+    examId: string;
+}
+
+const formSchema = z.object({
+    question: z.string().min(1, 'Question is required'),
+    optionA: z.string().min(1, 'Option A is required'),
+    optionB: z.string().min(1, 'Option B is required'),
+    optionC: z.string().min(1, 'Option C is required'),
+    optionD: z.string().min(1, 'Option D is required'),
+    answer: z.enum(['A', 'B', 'C', 'D']),
+});
+
+export default function SetQuestionsCard({ questionNumber, questionSubject, examId }: SetQuestionsCardProps) {
+    const { formValues, setFormValues } = useFormStore(); // Use the store
+
+    const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
-        defaultValues: defaultValues
+        defaultValues: formValues
     });
 
-    // Define a submit handler
-    const onSubmit = (values: FormDefaultValues) => {
+    const { reset } = form;
+
+    useEffect(() => {
+        // This will reset the form with the new values whenever formValues changes
+        console.log("this is the formValue", formValues);
+        reset(formValues);
+    }, [formValues, reset]);
+
+    const onSubmit = (values: FormValues) => {
+        setFormValues(values); // Update the store with new form values
         console.log(values);
     };
 
 
     return (
-        <div className="max-w-md mx-auto bg-white fixed right-[50%] top-[15%]  dark:bg-black p-4">
+        <div className="max-w-lg mx-auto bg-white  dark:bg-black p-4">
             <div className="flex flex-col gap-4">
                 <Card className="bg-gray-100 dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
                     <CardHeader className="bg-gray-200 dark:bg-gray-700 p-4">
                         <CardTitle className="text-lg font-bold text-gray-800 dark:text-gray-200">Exam Questions</CardTitle>
                         <CardDescription className="text-gray-600 dark:text-gray-400">
-                            Enter your exam questions and options below.
+                            question {formValues.questionNumber}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="p-4">
@@ -110,7 +120,7 @@ export default function SetQuestionsCard({ defaultValues, questionNumber, questi
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel className="dark:text-white text-black">Answer</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <Select onValueChange={field.onChange} value={field.value}>
 
                                                 <FormControl>
                                                     <SelectTrigger>

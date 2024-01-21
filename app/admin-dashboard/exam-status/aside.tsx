@@ -7,10 +7,12 @@ import { Badge } from '@/components/ui/badge';
 import { FaPlus, FaCalendarAlt } from 'react-icons/fa';
 import CustomCard from '@/components/customCard';
 import AddNewExam from './add-new-exam';
+import { useRouter } from 'next/navigation';
 
 function ExamStatusComponent() {
     const [revalidate, setRevalidate] = useState<string>('false');
     const { data, status, error } = useExamStatus(revalidate).data;
+    const router = useRouter();
 
     const handleRevalidateClick = () => {
         setRevalidate('true');
@@ -33,6 +35,8 @@ function ExamStatusComponent() {
                 cardColor="bg-white dark:bg-black text-black dark:text-white"
                 ringColor="ring-blue-200 dark:ring-blue-900"
                 contentTextSize='text-xs'
+                buttonOneText='set questions'
+                buttonOneAction={() => router.push(`/admin-dashboard/setExams/english/${exam.exam.id}`)}
             // Add any additional props you need for CustomCard
             />
         );

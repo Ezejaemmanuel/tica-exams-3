@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { FormDefaultValues } from './aside';
+import { FormValues, useFormStore } from '@/lib/store/zuestand-store';
 
 interface ExamCardProps {
     key_: string;
@@ -13,8 +13,7 @@ interface ExamCardProps {
     optionB: string;
     optionC: string;
     optionD: string;
-    correctAnswer: string;
-    updateDefaultValues: (newValues: FormDefaultValues) => void;
+    correctAnswer: 'A' | 'B' | 'C' | 'D'; // Ensure this is typed correctly
 }
 
 const ExamCard: React.FC<ExamCardProps> = ({
@@ -26,22 +25,22 @@ const ExamCard: React.FC<ExamCardProps> = ({
     optionC,
     optionD,
     correctAnswer,
-    updateDefaultValues,
 }) => {
+    const { formValues, setFormValues } = useFormStore();
     const handleEditClick = () => {
-        updateDefaultValues({
-            question,
-            optionA,
-            optionB,
-            optionC,
-            optionD,
-            answer: correctAnswer as 'A' | 'B' | 'C' | 'D', // Assuming correctAnswer is one of these values
+        setFormValues({
+            questionNumber: questionNumber,
+            question: question,
+            optionA: optionA,
+            optionB: optionB,
+            optionC: optionC,
+            optionD: optionD,
+            answer: correctAnswer, // or whatever the default should be
         });
     };
-
     return (
-        <main key={key_} className="flex flex-col items-center min-w-0 justify-center flex-1 p-4 relative md:p-8">
-            <div className="w-full max-w-2xl p-6 bg-white rounded-lg shadow-md dark:bg-gray-800">
+        <main key={key_} className="flex flex-col items-center min-w-0 max-w-full mx-auto justify-center flex-1 p-4 relative md:p-8">
+            <div className="w-full max-w-2xl p-6 bg-white rounded-lg shadow-md space-y-2 dark:bg-gray-800">
                 <div className="flex items-center justify-between">
                     <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Question {questionNumber}</h2>
                 </div>
@@ -65,6 +64,9 @@ const ExamCard: React.FC<ExamCardProps> = ({
                             <span className="text-gray-900 dark:text-gray-100">{optionD}</span>
                         </Label>
                     </RadioGroup>
+                </div>
+                <div className='text-sm'>
+                    correct answer {correctAnswer}
                 </div>
                 <div className="mt-6 flex flex-col sm:flex-row sm:justify-between gap-4">
                     <Button
