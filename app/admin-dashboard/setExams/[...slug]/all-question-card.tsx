@@ -25,17 +25,19 @@ const AllQuestionCardPage: React.FC<AllQuestionCardPageProps> = ({ examId, quest
     return (
         <div className='overflow-hidden '>
             <div>There are {allQuestionsLength}  questions</div>
-            {reversedQuestions?.map((question) => (
-                <ExamCard
-                    key_={question.id}
-                    questionNumber={question.questionNumber}
-                    question={question.question}
-                    optionA={question.optionA}
-                    optionB={question.optionB}
-                    optionC={question.optionC}
-                    optionD={question.optionD}
-                    correctAnswer={question.correctAnswer as "A" | "B" | "C" | "D"}
-                />
+            {reversedQuestions?.map((question, index) => (
+                <div key={index + 1}>
+                    <ExamCard
+                        questionId={question.id}
+                        questionNumber={index + 1}
+                        question={question.question}
+                        optionA={question.optionA}
+                        optionB={question.optionB}
+                        optionC={question.optionC}
+                        optionD={question.optionD}
+                        correctAnswer={question.correctAnswer as "A" | "B" | "C" | "D"}
+                    />
+                </div>
             ))}
         </div>
     );

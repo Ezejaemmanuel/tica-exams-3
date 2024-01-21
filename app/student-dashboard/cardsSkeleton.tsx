@@ -100,7 +100,7 @@ export const CardSkeletonArray: React.FC<CardSkeletonProps> = ({ amount, orienta
     return (
         <div className={containerClasses}>
             {Array.from({ length: amount }, (_, index) => (
-                <div className="max-w-md mx-auto shadow-lg border border-gray-200 dark:border-gray-700 rounded-lg">
+                <div key={index} className="max-w-md mx-auto shadow-lg border border-gray-200 dark:border-gray-700 rounded-lg">
                     <div className="flex items-center space-x-4 p-4">
                         <Skeleton className="rounded-full" style={{ width: '100px', height: '100px' }} />
                         <div>

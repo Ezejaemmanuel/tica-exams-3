@@ -89,19 +89,18 @@ model Instructions {
 }
 
 model EnglishQuestion {
-  id             String   @id @unique @default(cuid())
-  questionNumber Int      @unique
-  question       String
-  optionA        String
-  optionB        String
-  optionC        String
-  optionD        String
-  correctAnswer  Option
-  studentAnswer  Option?
-  examId         String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  exam           Exam     @relation(fields: [examId], references: [id])
+  id            String   @id @unique @default(cuid())
+  question      String
+  optionA       String
+  optionB       String
+  optionC       String
+  optionD       String
+  correctAnswer Option
+  studentAnswer Option?
+  examId        String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  exam          Exam     @relation(fields: [examId], references: [id])
 }
 
 model UserAnswer {
@@ -119,35 +118,33 @@ model UserAnswer {
 }
 
 model MathQuestion {
-  id             String   @id @unique @default(cuid())
-  questionNumber Int      @unique
-  question       String
-  optionA        String
-  optionB        String
-  optionC        String
-  optionD        String
-  correctAnswer  Option
-  studentAnswer  Option?
-  examId         String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  exam           Exam     @relation(fields: [examId], references: [id])
+  id            String   @id @unique @default(cuid())
+  question      String
+  optionA       String
+  optionB       String
+  optionC       String
+  optionD       String
+  correctAnswer Option
+  studentAnswer Option?
+  examId        String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  exam          Exam     @relation(fields: [examId], references: [id])
 }
 
 model GeneralStudiesQuestion {
-  id             String   @id @unique @default(cuid())
-  questionNumber Int      @unique
-  question       String
-  optionA        String
-  optionB        String
-  optionC        String
-  optionD        String
-  correctAnswer  Option
-  studentAnswer  Option?
-  examId         String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  exam           Exam     @relation(fields: [examId], references: [id])
+  id            String   @id @unique @default(cuid())
+  question      String
+  optionA       String
+  optionB       String
+  optionC       String
+  optionD       String
+  correctAnswer Option
+  studentAnswer Option?
+  examId        String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  exam          Exam     @relation(fields: [examId], references: [id])
 }
 
 model Notification {

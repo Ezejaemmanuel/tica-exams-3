@@ -2,6 +2,7 @@
 import { create } from 'zustand';
 
 export interface FormValues {
+    questionId: string;
     questionNumber: number;
     question: string;
     optionA: string;
@@ -21,6 +22,7 @@ interface FormStore {
 export const useFormStore = create<FormStore>((set) => ({
     formValues: {
         questionNumber: 0,
+        questionId: "",
         question: '',
         optionA: '',
         optionB: '',

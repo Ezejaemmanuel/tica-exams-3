@@ -124,7 +124,7 @@ export const MainForm: React.FC = () => {
         }
     };
 
-    const formElements = [<UserNameEmail key_={"user-name"} control={control} />, <DobGender key_={"dob-gender"} control={control} />, <Address key_={"address"} control={control} />];
+    const formElements = [<div key={"user-name"}><UserNameEmail control={control} /></div>, <div key={"dob-gender"}><DobGender control={control} /></div>, <div key={"address"}><Address control={control} /></div>];
 
     return (
         <Form {...form}>

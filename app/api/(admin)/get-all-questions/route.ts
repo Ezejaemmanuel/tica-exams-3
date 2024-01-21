@@ -5,7 +5,6 @@ import { safeKVOperation } from '../../safeKvOperation';
 
 export type Question = {
     id: string;
-    questionNumber: number;
     question: string;
     optionA: string;
     optionB: string;
@@ -41,7 +40,6 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
                     where: { examId },
                     select: {
                         id: true,
-                        questionNumber: true,
                         question: true,
                         optionA: true,
                         optionB: true,
@@ -55,7 +53,6 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
                     where: { examId },
                     select: {
                         id: true,
-                        questionNumber: true,
                         question: true,
                         optionA: true,
                         optionB: true,
@@ -69,7 +66,6 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
                     where: { examId },
                     select: {
                         id: true,
-                        questionNumber: true,
                         question: true,
                         optionA: true,
                         optionB: true,
