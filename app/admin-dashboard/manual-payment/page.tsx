@@ -10,4 +10,4 @@ const PaymentProofsListPage = () => {
     )
 }
 
-export default PaymentProofsListPage
+export default PaymentProofsListPage;

@@ -50,8 +50,8 @@ export default function MainContents() {
                             <p><strong className="font-semibold text-green-300">Finished Primary:</strong> {userInfo.finishedPrimary}</p>
                             <p><strong className="font-semibold text-green-300">Mass Server:</strong> {userInfo.massServer}</p>
                             <p><strong className="font-semibold text-green-300">Pious Society:</strong> {userInfo.piousSociety}</p>
-                            <p><strong className="font-semibold text-green-300">Father's Name:</strong> {userInfo.fathersName}</p>
-                            <p><strong className="font-semibold text-green-300">Mother's Name:</strong> {userInfo.mothersName}</p>
+                            <p><strong className="font-semibold text-green-300">Name of father:</strong> {userInfo.fathersName}</p>
+                            <p><strong className="font-semibold text-green-300">Name of mother:</strong> {userInfo.mothersName}</p>
                             <p><strong className="font-semibold text-green-300">Local Government Area:</strong> {userInfo.localGovernmentArea}</p>
                             <p><strong className="font-semibold text-green-300">Parent Deceased:</strong> {userInfo.parentDeceased}</p>
                             <p><strong className="font-semibold text-green-300">Catholic:</strong> {userInfo.catholic}</p>
@@ -59,7 +59,6 @@ export default function MainContents() {
                             <p><strong className="font-semibold text-green-300">Supports Entry:</strong> {userInfo.supportsEntry}</p>
                             <p><strong className="font-semibold text-green-300">Can Sponsor:</strong> {userInfo.canSponsor}</p>
                         </div>
-
                     </CardContent>
                 </Card>
             </div>
