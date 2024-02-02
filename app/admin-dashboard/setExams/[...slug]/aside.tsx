@@ -2,8 +2,8 @@
 import React, { Suspense } from 'react';
 import { CardSkeletonArray } from '@/app/student-dashboard/cardsSkeleton';
 import { useFormStore } from '@/lib/store/zuestand-store';
-import SetQuestionsCard from './form-to-set-question';
 import AllQuestionCardPage from './all-question-card';
+import SetQuestionsCard from './new-form';
 
 interface TwoSidedLayoutProps {
     subject: string;

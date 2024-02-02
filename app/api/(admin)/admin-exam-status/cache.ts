@@ -1,7 +1,7 @@
 // lib/cacheHandlers.ts
 
 import { kv } from '@vercel/kv';
-import { safeKVOperation } from '../../safeKvOperation';
+import { safeKVOperation } from '../../../../lib/api/redis/safeKvOperation';
 import { ExamStatus } from './route';
 
 export async function getExamStatusCache(cacheKey: string): Promise<ExamStatus[] | null> {
@@ -9,7 +9,7 @@ export async function getExamStatusCache(cacheKey: string): Promise<ExamStatus[]
 }
 
 export const setExamStatusCache = async (cacheKey: string, data: any) => {
-    return safeKVOperation(() => kv.set(cacheKey, data, { ex: 60 * 60 * 24 }));
+    return safeKVOperation(() => kv.set(cacheKey, data));
 };
 
 export const deleteExamStatusCache = async (cacheKey: string) => {

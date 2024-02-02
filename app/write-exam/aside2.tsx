@@ -1,0 +1,27 @@
+
+import React, { Suspense } from 'react'
+import BatteryStatus from './[sub]/_exam-components/batteryStatus'
+import { Button } from '@/components/ui/button'
+import SubjectBadges from './subjectSection'
+import ExamCountdown from './exam-countdown'
+
+const SideBarAndCo = () => {
+    return (
+        <>
+
+            <BatteryStatus />
+            <Suspense fallback={<div>Loading...</div>}>
+                <ExamCountdown />
+            </Suspense>
+
+            <aside className="hidden md:flex md:flex-col md:w-1/4 bg-gray-100 dark:bg-gray-800 overflow-auto">
+                <div className="p-4">
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Questions</h2>
+                    <SubjectBadges />
+                </div>
+            </aside>
+        </>
+    )
+}
+
+export default SideBarAndCo

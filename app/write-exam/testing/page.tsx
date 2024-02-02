@@ -1,10 +1,14 @@
 import React, { Suspense } from 'react'
-import UserQuestion from '../[sub]/_exam-components/usequstion'
+import SubjectBadges from './aside'
 
 const UserQuestionTest = () => {
+    // const userId = getUserId();
+    // if (!userId) {
+    //     redirect("/sign-in")
+    // }
     return (
-        <Suspense>
-            <UserQuestion userId={''} initialAcronym={'E-1'} />
+        <Suspense fallback={<div>loading.....</div>}>
+            <SubjectBadges />
         </Suspense>
     )
 }

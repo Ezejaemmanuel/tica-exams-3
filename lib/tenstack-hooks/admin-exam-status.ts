@@ -12,9 +12,9 @@ type ExamStatusResponse = {
     error?: string;
 };
 
-export const useExamStatus = (revalidate: string) => {
+export const useAdminExamStatus = (revalidate: string) => {
     return useSuspenseQuery<ExamStatusResponse>({
-        queryKey: ['examStatus', revalidate],
+        queryKey: ['admin-examStatus', revalidate],
         queryFn: async ({ queryKey }) => {
             const [, revalidate] = queryKey;
             const url = addBaseURL(`/api/admin-exam-status?revalidate=${revalidate}`)

@@ -12,6 +12,7 @@ export enum ExamStatusEnum {
 }
 
 import { Exam as PrismaExam, EnglishQuestion, GeneralStudiesQuestion, MathQuestion, UserExam } from '@prisma/client';
+import { checkAuthPermission } from '@/lib/auth/utils';
 
 export type ExamStatus = {
     exam: {
@@ -20,10 +21,7 @@ export type ExamStatus = {
         date: PrismaExam['date'];
         startTime: PrismaExam['startTime'];
         lengthOfExam: PrismaExam['lengthOfExam'];
-        englishQuestions: Array<{ id: EnglishQuestion['id'] }>;
-        generalStudiesQuestions: Array<{ id: GeneralStudiesQuestion['id'] }>;
-        mathQuestions: Array<{ id: MathQuestion['id'] }>;
-        userExam: Array<{ id: UserExam['id'] }>;
+
     };
     englishQuestionsCount: number;
     generalStudiesQuestionsCount: number;
@@ -32,6 +30,8 @@ export type ExamStatus = {
 };
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
+    await checkAuthPermission("only_admin_and_superadmin");
+
     const revalidate = req.nextUrl.searchParams.get('revalidate') === 'true';
     const cacheKey = 'tica:exam-status';
 
@@ -88,7 +88,13 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
             }
 
             examStatus = exams.map(exam => ({
-                exam: exam,
+                exam: {
+                    id: exam.id,
+                    classLevel: exam.classLevel,
+                    date: exam.date,
+                    startTime: exam.startTime,
+                    lengthOfExam: exam.lengthOfExam,
+                },
                 englishQuestionsCount: exam.englishQuestions.length,
                 generalStudiesQuestionsCount: exam.generalStudiesQuestions.length,
                 mathQuestionsCount: exam.mathQuestions.length,

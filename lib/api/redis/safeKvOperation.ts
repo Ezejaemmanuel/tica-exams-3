@@ -4,10 +4,10 @@ type KVOperation<T> = () => Promise<T>;
 export async function safeKVOperation<T>(operation: KVOperation<T>): Promise<T | null> {
     try {
         const result = await operation();
-        console.log('KV operation successful:', result);
+        // console.log('KV operation successful:', result);
         return result;
     } catch (error) {
-        console.error('KV operation error:', error);
+        // console.error('KV operation error:', error);
         // Return null to indicate the operation did not succeed
         return null;
     }

@@ -3,10 +3,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { ClassLevel } from '@prisma/client';
 import { kv } from '@vercel/kv';
-import { safeKVOperation } from '../safeKvOperation';
-import { ExamStatus } from '../exam-status/aside-functions';
-import { ExamDetails } from '@/app/admin-dashboard/setExamDetails/aside';
+import { safeKVOperation } from '../../../lib/api/redis/safeKvOperation';
+import { UpdatedExamDetails } from '@/app/admin-dashboard/setExamDetails/aside';
 import { deleteExamStatusCache } from '../(admin)/admin-exam-status/cache';
+import { deleteAllExamIdsFromCache } from '@/lib/api/redis/exam-id';
+import { setExamStatusKV } from '@/lib/api/redis/exam-status';
+import { ExamStatus } from '../(admin)/admin-exam-status/route';
 
 
 interface ExamStatusKVValue {
@@ -16,9 +18,9 @@ interface ExamStatusKVValue {
 }
 
 export async function POST(request: NextRequest) {
-    const fromFront: ExamDetails = await request.json();
+    const fromFront: UpdatedExamDetails = await request.json();
     console.log("this is from the frontend", fromFront);
-    if (!fromFront.classLevel || !fromFront.examStartDate || !fromFront.examTime || !fromFront.length) {
+    if (!fromFront.classLevel || !fromFront.examStartDate || !fromFront.examTime || !fromFront.length || !fromFront.examId) {
         return NextResponse.json({ error: "Some fields are not available" }, { status: 400 });
     }
 
@@ -27,11 +29,12 @@ export async function POST(request: NextRequest) {
         classLevelEnum = ClassLevel.JSS1;
     } else if (fromFront.classLevel === 'SS1') {
         classLevelEnum = ClassLevel.SS1;
+    } else if (fromFront.classLevel === 'JSS2') {
+        classLevelEnum = ClassLevel.JSS2;
     } else {
         return NextResponse.json({ error: 'Invalid class level.' }, { status: 400 });
     }
 
-    const examId = `${fromFront.classLevel.toLowerCase()}-1-2024`;
     // console.log("thsi is the examId", examId);
     // const startDate = new Date(fromFront.examStartDate);
     // const year = startDate.getUTCFullYear();
@@ -47,11 +50,10 @@ export async function POST(request: NextRequest) {
     // Note: examTime is expected to be in 'HH:mm' format
     const examDateTime = fromFront.examStartDate;
     console.log("this is the exam datetime that is about to be set", examDateTime);
-    async function setExamStatusKV(examId: string, examStatus: ExamStatusKVValue) {
-        const key = `${examId}:exam-status:all`;
-        return safeKVOperation(() => kv.set(key, examStatus));
-    }
+
     const length = fromFront.length;
+    const examId = fromFront.examId;
+    console.log("this is the examId that has been involved since");
     try {
         const newExam = await prisma.exam.upsert({
             where: { id: examId },
@@ -69,17 +71,18 @@ export async function POST(request: NextRequest) {
         });
         const cacheKey = 'tica:exam-status';
 
-        const [kvResult, cacheResult] = await Promise.all([
+        const [kvResult, cacheResult, _] = await Promise.all([
             setExamStatusKV(examId, {
                 examDateTime,
                 length,
-                status: ExamStatus.ExamDateSet // Assuming the default status when creating an exam
             }),
-            deleteExamStatusCache(cacheKey)
+            deleteExamStatusCache(cacheKey),
+            deleteAllExamIdsFromCache()
         ]);
         if (kvResult === null) {
             console.error('Failed to set KV value for exam status');
         }
+
         return NextResponse.json({ message: 'Exam created successfully', exam: newExam });
     } catch (error) {
         console.error('Failed to create exam', error);

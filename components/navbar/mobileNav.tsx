@@ -43,7 +43,7 @@ const MobileNav = () => {
                             <>
                                 <li className='my-3 h-px w-full bg-black' />
                                 <li>
-                                    <SignInButton afterSignInUrl='/register' mode='modal' />
+                                    <SignInButton afterSignInUrl='/sync-user' afterSignUpUrl='/sync-user' mode='modal' />
                                 </li>
                                 <li className='my-3 h-px w-full bg-black' />
                                 <li>

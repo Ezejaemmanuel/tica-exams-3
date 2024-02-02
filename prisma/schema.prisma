@@ -1,14 +1,11 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DIRECT_URL")
-  // directUrl = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model UserAuth {
@@ -22,6 +19,7 @@ model UserAuth {
   imageUrl              String?
   banned                Boolean
   primaryEmailAddressId String?
+  role                  Role     @default(STUDENT)
   primaryPhoneNumberId  String?
   emailAddresses        Json
   phoneNumbers          Json
@@ -29,60 +27,93 @@ model UserAuth {
   user                  User?
 }
 
+enum YesNoEnum {
+  yes
+  no
+}
+
 model User {
-  id                            String       @id @unique @default(cuid())
+  id                            String               @id @unique @default(cuid())
   name                          String
-  officialEmail                 String       @unique
-  class                         String
-  dob                           DateTime
-  officialPhoneOrWhatsappNumber String
-  fullAddress                   String
-  locality                      String
-  city                          String
-  state                         String
-  country                       String
-  homeAddress                   String
-  role                          Role         @default(STUDENT)
-  classLevel                    ClassLevel // Add this line
+  presentClass                  String // matches candidatesFullName
+  class                         String // matches presentClass
+  dateOfBirth                   DateTime // matches dateOfBirth, conversion needed from string to DateTime
+  officialPhoneOrWhatsappNumber String // matches phoneNumber, ensure validation for phone number format
+  fullAddress                   String // can be used for residentialAddress
+  state                         String // can be used for stateOfOrigin
+  homeAddress                   String // can be used for homeTown
+  classLevel                    ClassLevel
+  createdAt                     DateTime             @default(now())
+  updatedAt                     DateTime             @updatedAt
   result                        Result?
   userAnswer                    UserAnswer[]
   userExam                      UserExam[]
-  userAuthId                    String       @unique
-  userAuth                      UserAuth?    @relation(fields: [userAuthId], references: [id])
+  paymentConfirmation           PaymentConfirmation?
+  userAuthId                    String               @unique
+  userAuth                      UserAuth?            @relation(fields: [userAuthId], references: [id])
+  // New fields from form schema
+  dateOfBaptism                 DateTime? // Optional, conversion needed from string to DateTime
+  dateOfHolyCommunion           DateTime? // Optional, conversion needed from string to DateTime
+  dateOfHolyConfirmation        DateTime? // Optional, conversion needed from string to DateTime
+  presentSchool                 String // New field
+  finishedPrimary               YesNoEnum // Updated to use YesNoEnum
+  massServer                    YesNoEnum // Updated to use YesNoEnum
+  piousSociety                  YesNoEnum
+  examId                        String // New field
+  fathersName                   String // New field
+  mothersName                   String // New field
+  localGovernmentArea           String // New field
+  parentDeceased                YesNoEnum // Updated to use YesNoEnum
+  catholic                      YesNoEnum // Updated to use YesNoEnum
+  denomination                  String // New field
+  supportsEntry                 YesNoEnum // Updated to use YesNoEnum
+  canSponsor                    YesNoEnum // Updated to use YesNoEnum
+  candidateProfile              String // this is the image profile url of the user
+}
+
+model PaymentConfirmation {
+  id               String   @id @unique @default(cuid())
+  paymentUrl       String? // URL to the image proof of payment
+  paymentConfirmed Boolean  @default(false) // Whether the payment has been confirmed
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  examId           String
+  userId           String   @unique
+  user             User     @relation(fields: [userId], references: [id])
 }
 
 model Exam {
-  id                      String                   @unique
+  id                      String                   @id @unique @default(cuid())
   date                    DateTime
   startTime               DateTime?
   lengthOfExam            Int?
-  classLevel              ClassLevel // Add this line
+  classLevel              ClassLevel
   createdAt               DateTime                 @default(now())
   updatedAt               DateTime                 @updatedAt
   englishQuestions        EnglishQuestion[]
   generalStudiesQuestions GeneralStudiesQuestion[]
   mathQuestions           MathQuestion[]
   userExam                UserExam[]
+  results                 Result[]
 }
 
 model UserExam {
-  id        String
-  userId    String
-  examId    String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @unique @default(cuid())
+  userId       String
+  examId       String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  examFinished Boolean  @default(false)
+  resultId     String?
+  exam         Exam     @relation(fields: [examId], references: [id])
+  result       Result?
+  user         User     @relation(fields: [userId], references: [id])
 
-  examFinished Boolean @default(false)
-  resultId     String? @unique
-  exam         Exam    @relation(fields: [examId], references: [id])
-  result       Result? @relation(fields: [resultId], references: [id])
-  user         User    @relation(fields: [userId], references: [id])
-
-  @@unique([userId, examId])
+  @@unique([userId])
 }
 
 model Instructions {
-  id           Int      @id @default(1)
+  id           Int      @id @default(autoincrement())
   instructions Json
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -166,11 +197,13 @@ model Result {
   position            Int
   passed              Boolean
   userId              String    @unique
+  examId              String    @unique
+  exam                Exam?     @relation(fields: [examId], references: [id])
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
-  userExamId          Int       @unique
+  userExamId          String    @unique
   user                User      @relation(fields: [userId], references: [id])
-  userExam            UserExam?
+  userExam            UserExam? @relation(fields: [userExamId], references: [id])
 }
 
 enum Option {
@@ -188,5 +221,6 @@ enum Role {
 
 enum ClassLevel {
   JSS1
+  JSS2
   SS1
 }

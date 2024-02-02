@@ -1,30 +1,23 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import { formatDistanceToNow, parseISO, addMinutes, formatDistance } from 'date-fns';
-import { useExamStatus, ExamStatusResponse } from "@/lib/tenstack-hooks/exam-status";
-import { Dialog, DialogContent } from "../ui/dialog";
+import { ExamStatus, useExamStatus } from "@/lib/tenstack-hooks/exam-status";
 import { ExamNotAvailable, ExamAvailable, ExamOngoing, ExamCompleted } from "@/components/card-status";
-import { ExamStatus } from '@/app/api/exam-status/aside-functions';
+import { Dialog, DialogContent } from '../ui/dialog';
 
 interface ExamStatusProps {
     isOpen: boolean;
     setIsOpen: Dispatch<SetStateAction<boolean>>;
-    classLevel: 'jss1' | 'ss1';
+    classLevel: 'jss1' | 'ss1' | "jss2";
 }
 
 export const ExamStatusPage: React.FC<ExamStatusProps> = ({ isOpen, setIsOpen, classLevel }) => {
-    const { data: examStatusData, isLoading, isError } = useExamStatus(classLevel);
+    const { data: examStatusData } = useExamStatus();
+    console.log("this is hte exmastatus data ooooo", examStatusData);
 
-    if (isLoading) {
-        return <div>Loading...</div>;
-    }
-
-    if (isError || !examStatusData) {
-        return <div>Error loading exam status.</div>;
-    }
-
-    const examState: ExamStatus = examStatusData.status;
-    const examDate: Date | null = examStatusData.examDate || null;
-    const examLength: number = examStatusData.length || 0; // Length of the exam in minutes
+    console.log("this is the data that is returned ooooo for the exam status", examStatusData?.status);
+    const examState: ExamStatus | undefined = examStatusData?.status;
+    const examDate: Date | null = examStatusData?.examDateTime || null;
+    const examLength: number = examStatusData?.length || 0; // Length of the exam in minutes
     const now = new Date();
 
     let timeUntilExam = '';
@@ -49,7 +42,7 @@ export const ExamStatusPage: React.FC<ExamStatusProps> = ({ isOpen, setIsOpen, c
                             return <ExamAvailable content={availableContent} setIsOpen={setIsOpen} />;
                         case ExamStatus.ExamOngoing:
                             const ongoingContent = `The exam started ${timeSinceExam} ago. Time remaining: ${examEndTime ? formatDistance(now, examEndTime) : ''}.`;
-                            return <ExamOngoing content={ongoingContent} setIsOpen={setIsOpen} />;
+                            return <ExamOngoing content={ongoingContent} setIsOpen={setIsOpen} examId={`${classLevel.toLowerCase()}-1-2024`} />;
                         case ExamStatus.ExamFinished:
                             const completedContent = `The exam finished ${timeSinceExam} ago.`;
                             return <ExamCompleted content={completedContent} setIsOpen={setIsOpen} />;

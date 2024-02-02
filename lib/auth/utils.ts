@@ -3,6 +3,7 @@ import { currentUser } from "@clerk/nextjs";
 import { EmailAddress, auth } from "@clerk/nextjs/server";
 import { $Enums, Role } from "@prisma/client";
 import { redirect } from "next/navigation";
+import { User } from "@clerk/nextjs/server";
 
 // type AuthSession = {
 //   session: {
@@ -51,7 +52,7 @@ type AuthSession = {
       id: string;
       name: string | null;
       email?: EmailAddress;
-      role?: $Enums.Role;
+      role?: $Enums.Role | null;
       image: string
     };
   } | null;
@@ -71,7 +72,8 @@ export const getUserAuth = async (): Promise<AuthSession> => {
   // console.log("thsi is the sesion that would be manually added to the database ", session);
 
   if (session) {
-    const role = await getUserRoleFromCacheOrPrisma(session.id)
+    const role = await getUserRoleFromCacheOrPrisma(session.id);
+
     return {
       session: {
         user: {
@@ -92,7 +94,7 @@ export const getUserAuth = async (): Promise<AuthSession> => {
 
 export const checkAuthPermission = async (role: 'All' | 'only_superadmin' | 'only_admin_and_superadmin') => {
   const { session } = await getUserAuth();
-
+  console.log("this is the user session", session);
 
   if (!session) {
     redirect("/sign-in");
@@ -103,17 +105,23 @@ export const checkAuthPermission = async (role: 'All' | 'only_superadmin' | 'onl
       case 'All':
         // Allow all authenticated users
         // break;
-        return session;
+        break;
       case 'only_superadmin':
         if (session.user.role !== Role.SUPERADMIN) {
           errorMessage = 'YOU ARE NOT AUTHORIZED TO ACCESS THIS PAGE';
+          throw new Error(errorMessage);
+
         }
-        return session;
+        break;
       case 'only_admin_and_superadmin':
         if (session.user.role !== 'ADMIN' && session.user.role !== Role.SUPERADMIN) {
+
           errorMessage = 'YOU ARE NOT AUTHORIZED TO ACCESS THIS PAGE';
+          console.log(errorMessage)
+          throw new Error(errorMessage);
+
         }
-        return session;
+        break;
 
       default:
         errorMessage = 'Invalid role';

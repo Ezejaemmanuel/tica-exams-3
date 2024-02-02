@@ -1,290 +1,283 @@
-/**
- * v0 by Vercel.
- * @see https://v0.dev/t/DdPPXuknFU7
- */
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { SelectValue, SelectTrigger, SelectItem, SelectContent, Select } from "@/components/ui/select"
-import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { SVGProps } from "react"
+// TanStackTable.tsx
+"use client";
+import { useMemo, useState } from 'react';
+import { ColumnDef, createColumnHelper, flexRender, getCoreRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
+import { Input } from '../ui/input';
+import SortingSelect from './sorting-select';
+import { PaymentStatus, User } from '@/app/api/(admin)/users-table/route';
+import { useUsers } from '@/lib/tenstack-hooks/admin-user-table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import { Badge, badgeVariants } from '../ui/badge';
+import { useRouter } from 'next/navigation';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import Link from 'next/link';
+import Image from 'next/image';
+export enum PaymentFilter {
+    All = 'all',
+    Confirmed = 'confirmed',
+    NotConfirmed = 'notConfirmed',
+    NotPayed = 'notPayed',
+}
 
 
-export default function AdminDashboard() {
+const TanStackTable = () => {
+    console.log('Setting up component state...');
+    const router = useRouter();
+    const [page, setPage] = useState(1);
+    console.log('Current page:', page);
+    const [sort, setSort] = useState('name');
+    console.log('Current sort:', sort);
+    const [order, setOrder] = useState('asc');
+    console.log('Current order:', order);
+    const [search, setSearch] = useState('');
+    console.log('Current search:', search);
+    const [paymentFilter, setPaymentFilter] = useState<PaymentFilter>(PaymentFilter.All);
+    console.log('Fetching user data...');
+    const { data, isLoading, isError, error } = useUsers(page, sort, order, search, paymentFilter);
 
+    console.log('User data:', data);
+    console.log('Is loading:', isLoading);
+    console.log('Is error:', isError);
+    console.log('Error:', error);
+
+    console.log('Creating table instance...');
+    const columns = useMemo(() => {
+        const columnHelper = createColumnHelper<User>();
+
+        return [
+            columnHelper.accessor((_row, index) => index + 1, {
+                id: 'serial',
+                header: () => <span className="text-md capitalize">S/N</span>,
+                cell: (info) => {
+                    const value = info.getValue();
+                    return <span className=''>{value}</span>;
+                },
+            }),
+            columnHelper.accessor((row) => row.name, {
+                id: 'name',
+                header: () => <span className="text-md capitalize">Name</span>,
+                cell: (info) => {
+                    const value = info.getValue();
+                    const userId = info.row.original.id; // Assuming the user ID is stored in `id` property
+                    console.log("this is the name of the user: ", value);
+                    return (
+                        <Link href={`/admin-student-dashboard?userId=${userId}`} passHref className='text-md   hover:underline'>
+                            {value}
+                        </Link>
+                    );
+                },
+            }),
+
+
+            columnHelper.accessor((row) => row.candidateProfile, {
+                id: 'candidateProfile',
+                header: () => <span className="text-md capitalize">Email</span>,
+                cell: (info) => {
+                    const value = info.getValue();
+                    return <Image
+                        src={value}
+                        height={10}
+                        width={10}
+                        alt="..."
+                        className="rounded-full w-10 h-10 object-cover"
+                    />
+                },
+            }),
+            columnHelper.accessor((row) => row.class, {
+                id: 'class',
+                header: () => <span className="text-md capitalize">Class</span>,
+                cell: (info) => {
+                    const value = info.getValue();
+                    return value ? <Badge className='text-xs'>{value}</Badge> : 'N/A'
+
+                },
+            }),
+            columnHelper.accessor((row) => row.createdAt, {
+                id: 'createdAt',
+                header: () => <span className="text-md capitalize">Registered At</span>,
+                cell: (info) => {
+                    const dateValue = new Date(info.getValue());
+                    return dateValue.toLocaleDateString('en-US');
+                },
+            }),
+            columnHelper.accessor((row) => row.paymentConfirmation?.updatedAt, {
+                id: 'paymentConfirmationUpdatedAt',
+                header: () => <span className="text-md capitalize">Made Payment On</span>,
+                cell: (info) => {
+                    const value = info.getValue();
+                    const dateValue = value !== undefined ? new Date(value) : null;
+                    return dateValue ? dateValue.toLocaleDateString('en-US') : 'N/A';
+                },
+            }),
+            columnHelper.accessor((row) => row.paymentStatus, {
+                id: 'paymentStatus',
+                header: () => <span className="text-md capitalize">Payment Status</span>,
+                cell: (info) => {
+                    // const router = useRouter(); // Initialize the router
+                    const paymentStatus = info.getValue();
+                    let bgColor = 'bg-gray-500 rounded-full'; // Default background color
+                    let onClickHandler = () => { }; // Default to an empty function
+
+                    if (paymentStatus === PaymentStatus.Confirmed) {
+                        bgColor = 'bg-green-500 rounded-full';
+                    } else if (paymentStatus === PaymentStatus.NotConfirmed) {
+                        bgColor = 'bg-red-500 animate-pulse rounded-full';
+                        // Define the click handler for NotConfirmed status
+                        // onClickHandler = () => router.push('/admin-dashboard/manual-payment');
+
+                    } else if (paymentStatus === PaymentStatus.NotPayed) {
+                        bgColor = 'bg-red-500 rounded-full';
+                        // Define the click handler for NotPayed status
+                    }
+
+                    return (
+                        <Link
+                            href={`/admin-dashboard/manual-payment`}
+                            className={`${badgeVariants()} ${bgColor} p-1 text-xs rounded cursor-pointer`}
+                        >
+                            {paymentStatus ?? 'N/A'}
+                        </Link>
+                    );
+                },
+            }),
+            columnHelper.accessor((row) => row.userAuth?.role, {
+                id: 'userAuthRole',
+                header: () => <span className="text-md capitalize">Role</span>,
+                cell: (info) => info.getValue() ?? 'N/A',
+            }),
+            columnHelper.accessor((row) => row.result?.totalScore, {
+                id: 'resultTotalScore',
+                header: () => <span className="text-md capitalize">Total Score</span>,
+                cell: (info) => info.getValue() ?? 'N/A',
+            }),
+            columnHelper.accessor((row) => row.result?.position, {
+                id: 'resultPosition',
+                header: () => <span className="text-md capitalize">Position</span>,
+                cell: (info) => info.getValue() ?? 'N/A',
+            }),
+            columnHelper.accessor((row) => row.result?.passed, {
+                id: 'resultPassed',
+                header: () => <span className="text-md capitalize">Passed</span>,
+                cell: (info) => {
+                    const passed = info.getValue();
+                    const bgColor = passed ? 'bg-green-200' : 'bg-red-200';
+                    return (
+                        <Badge className={`${bgColor} p-1 text-xs rounded`}>
+                            {passed ? 'Yes' : 'No'}
+                        </Badge>
+                    );
+                },
+            }),
+            // Add more columns as needed
+        ];
+    }, [sort, order, search, paymentFilter]);
+    const table = useReactTable({
+        data: data?.users || [],
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+        manualPagination: true,
+        pageCount: data?.totalPages,
+    });
+    if (data.users.length === 0) {
+        return <div>There is no user</div>
+    }
+    console.log('Table instance created:', table);
+
+
+
+    console.log('Rendering table...');
     return (
-        <div className="flex flex-col md:flex-row w-full ">
-            <main className="flex-1">
-                <div className="px-4 py-8">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                        <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">Emails</h1>
-                        <div className="flex items-center mt-4 md:mt-0">
-                            <Button className="mr-4" variant="ghost">
-                                Feedback
-                            </Button>
-                            <Button variant="ghost">Help</Button>
-                            <Button className="ml-4" variant="ghost">
-                                Docs
-                            </Button>
-                            <Button className="ml-4" variant="ghost">
-                                API
-                            </Button>
-                        </div>
-                    </div>
-                    <div className="mt-6">
-                        <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
-                            <Input className="w-full md:w-1/3" placeholder="Search..." />
-                            <div className="mt-4 md:mt-0"><Select >
-                                <SelectTrigger id="timeframe">
-                                    <SelectValue placeholder="Last 7 days" />
-                                </SelectTrigger>
-                                <SelectContent position="popper">
-                                    <SelectItem value="last-7-days">Last 7 days</SelectItem>
-                                    <SelectItem value="last-30-days">Last 30 days</SelectItem>
-                                    <SelectItem value="last-year">Last year</SelectItem>
-                                </SelectContent>
-                            </Select></div>
-                            <div className="mt-4 md:mt-0"><Select >
-                                <SelectTrigger id="status">
-                                    <SelectValue placeholder="All Statuses" />
-                                </SelectTrigger>
-                                <SelectContent position="popper">
-                                    <SelectItem value="all">All Statuses</SelectItem>
-                                    <SelectItem value="delivered">Delivered</SelectItem>
-                                    <SelectItem value="pending">Pending</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            </div>
-                            <div className="mt-4 md:mt-0">
-                                <Select >
-                                    <SelectTrigger id="apikey">
-                                        <SelectValue placeholder="All API Keys" />
-                                    </SelectTrigger>
-                                    <SelectContent position="popper">
-                                        <SelectItem value="all">All API Keys</SelectItem>
-                                        <SelectItem value="key-1">API Key 1</SelectItem>
-                                        <SelectItem value="key-2">API Key 2</SelectItem>
-                                    </SelectContent>
-                                </Select></div>
-                        </div>
-                        <div className="mt-6">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>To</TableHead>
-                                        <TableHead>Status</TableHead>
-                                        <TableHead>Subject</TableHead>
-                                        <TableHead>Sent</TableHead>
-                                        <TableHead />
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    <TableRow>
-                                        <TableCell>lindajatique@gmail.com</TableCell>
-                                        <TableCell>
-                                            <Badge variant="secondary">Delivered</Badge>
-                                        </TableCell>
-                                        <TableCell>Hello world!</TableCell>
-                                        <TableCell>less than a minute ago</TableCell>
-                                        <TableCell>
-                                            <CircleEllipsisIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-                                        </TableCell>
-                                    </TableRow>
-                                </TableBody>
-                            </Table>
-                        </div>
-                    </div>
+        <div className="p-6 w-full mx-auto text-gray-700 dark:text-gray-200">
+            <div className="flex justify-end items-center mb-4 space-x-2">
+                <Input
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search..."
+                    className="w-1/4 p-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded outline-none transition-colors duration-200 ease-in-out"
+                />
+                <div className="w-1/6">
+                    <SortingSelect setSort={setSort} setOrder={setOrder} />
                 </div>
-            </main>
+                <div className="w-1/6">
+
+                    <Select onValueChange={(value: PaymentFilter) => setPaymentFilter(value)}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Filter by Payment Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value={PaymentFilter.All}>All</SelectItem>
+                            <SelectItem value={PaymentFilter.Confirmed}>Confirmed</SelectItem>
+                            <SelectItem value={PaymentFilter.NotConfirmed}>Not Confirmed</SelectItem>
+                            <SelectItem value={PaymentFilter.NotPayed}>Not Payed</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+
+            </div>
+
+
+            <Table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <TableHeader className="bg-gray-50 dark:bg-gray-800">
+                    {table.getHeaderGroups().map((headerGroup) => (
+                        <TableRow key={headerGroup.id}>
+                            {headerGroup.headers.map((header) => (
+                                <TableHead key={header.id} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                                    {flexRender(header.column.columnDef.header, header.getContext())}
+                                </TableHead>
+                            ))}
+                        </TableRow>
+                    ))}
+                </TableHeader>
+                <TableBody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                    {table.getRowModel().rows.map((row, i) => (
+                        <TableRow key={row.id}>
+                            {row.getVisibleCells().map((cell) => (
+                                <TableCell key={cell.id} className="px-6 py-4 whitespace-nowrap">
+                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                </TableCell>
+                            ))}
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+            <div className="flex justify-end items-center mt-4 space-x-2">
+                <div>
+                    total of   {data.totalPages}
+                </div>
+                <button
+                    onClick={() => {
+                        const newPage = Math.max(page - 1, 1);
+                        console.log('Previous page:', newPage);
+                        setPage(newPage);
+                    }}
+                    disabled={page === 1}
+                    className="px-4 py-2 border border-gray-300 rounded text-sm bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50"
+                >
+                    Previous
+                </button>
+                <span className="text-sm bg-white dark:bg-gray-800 py-2 px-4 rounded">
+                    Page {page} of {data?.totalPages}
+                </span>
+                <button
+                    onClick={() => {
+                        const newPage = (!data || page >= data.totalPages) ? page : page + 1;
+                        console.log('Next page:', newPage);
+                        setPage(newPage);
+                    }}
+                    disabled={!data || page >= data.totalPages}
+                    className="px-4 py-2 border border-gray-300 rounded text-sm bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50"
+                >
+                    Next
+                </button>
+            </div>
+
         </div>
-    )
-}
+    );
+};
 
-function CircleEllipsisIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <circle cx="12" cy="12" r="10" />
-            <path d="M17 12h.01" />
-            <path d="M12 12h.01" />
-            <path d="M7 12h.01" />
-        </svg>
-    )
-}
+console.log('TanStackTable component defined.');
+
+export default TanStackTable;
 
 
-function CogIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z" />
-            <path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
-            <path d="M12 2v2" />
-            <path d="M12 22v-2" />
-            <path d="m17 20.66-1-1.73" />
-            <path d="M11 10.27 7 3.34" />
-            <path d="m20.66 17-1.73-1" />
-            <path d="m3.34 7 1.73 1" />
-            <path d="M14 12h8" />
-            <path d="M2 12h2" />
-            <path d="m20.66 7-1.73 1" />
-            <path d="m3.34 17 1.73-1" />
-            <path d="m17 3.34-1 1.73" />
-            <path d="m11 13.73-4 6.93" />
-        </svg>
-    )
-}
-
-
-function FileTextIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-            <polyline points="14 2 14 8 20 8" />
-            <line x1="16" x2="8" y1="13" y2="13" />
-            <line x1="16" x2="8" y1="17" y2="17" />
-            <line x1="10" x2="8" y1="9" y2="9" />
-        </svg>
-    )
-}
-
-
-function GlobeIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <circle cx="12" cy="12" r="10" />
-            <line x1="2" x2="22" y1="12" y2="12" />
-            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-        </svg>
-    )
-}
-
-
-function HomeIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-            <polyline points="9 22 9 12 15 12 15 22" />
-        </svg>
-    )
-}
-
-
-function KeyIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <circle cx="7.5" cy="15.5" r="5.5" />
-            <path d="m21 2-9.6 9.6" />
-            <path d="m15.5 7.5 3 3L22 7l-3-3" />
-        </svg>
-    )
-}
-
-
-function MailboxIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <path d="M22 17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9.5C2 7 4 5 6.5 5H18c2.2 0 4 1.8 4 4v8Z" />
-            <polyline points="15,9 18,9 18,11" />
-            <path d="M6.5 5C9 5 11 7 11 9.5V17a2 2 0 0 1-2 2v0" />
-            <line x1="6" x2="7" y1="10" y2="10" />
-        </svg>
-    )
-}
-
-
-function WebhookIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <path d="M18 16.98h-5.99c-1.1 0-1.95.94-2.48 1.9A4 4 0 0 1 2 17c.01-.7.2-1.4.57-2" />
-            <path d="m6 17 3.13-5.78c.53-.97.1-2.18-.5-3.1a4 4 0 1 1 6.89-4.06" />
-            <path d="m12 6 3.13 5.73C15.66 12.7 16.9 13 18 13a4 4 0 0 1 0 8" />
-        </svg>
-    )
-}

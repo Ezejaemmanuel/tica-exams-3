@@ -1,35 +1,81 @@
-// hooks/useExamStatus.ts
-import { ExamStatus } from '@/app/api/exam-status/aside-functions';
-import { UseSuspenseQueryResult, useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { addBaseURL } from '../addBaseUrl';
-// types/ExamStatusTypes.ts
+import { ExamStatusZustand, useExamStatusStore } from '../store/zuestand-store';
 
+export enum ExamStatus {
+    NotYet = 'not-yet',
+    ExamDateSet = 'exam-date-set',
+    ExamOngoing = 'exam-ongoing',
+    ExamFinished = 'exam-finished',
+    ResultOut = 'result-out',
+}
 
-export interface ExamStatusResponse {
-    status: ExamStatus;
-    examDate?: Date;
+export interface ExamStatusKVValue {
+    examDateTime?: Date;
     length?: number;
+    status?: ExamStatus;
 }
 
-async function fetchExamStatus({ queryKey }: { queryKey: [string, string] }): Promise<ExamStatusResponse> {
-    const [, classLevel] = queryKey;
-    const url = addBaseURL(`/api/exam-status?classLevel=${classLevel}`);
-    const response = await fetch(url);
+// Function to calculate the current exam status
+const calculateExamStatus = (data: ExamStatusZustand): ExamStatusKVValue => {
+    const now = new Date();
+    let status: ExamStatus | undefined;
 
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error);
+    if (data.examDateTime) {
+        const examDateTime = new Date(data.examDateTime);
+        const examEndTime = new Date(examDateTime.getTime() + (data.length || 0) * 60000);
+
+        if (now < examDateTime) {
+            status = ExamStatus.ExamDateSet;
+        } else if (now >= examDateTime && now <= examEndTime) {
+            status = ExamStatus.ExamOngoing;
+        } else {
+            // Adjust this logic based on your actual logic for checking result status
+            status = ExamStatus.ExamFinished; // or ExamStatus.ResultOut based on your condition
+        }
     }
-    return response.json();
-}
 
+    return {
+        ...data,
+        status,
+    };
+};
 
-export function useExamStatus(classLevel: 'jss1' | 'ss1'): UseSuspenseQueryResult<ExamStatusResponse, Error> {
-    return useSuspenseQuery({
-        queryKey: ['examStatus', classLevel],
+const fetchExamStatus = async (): Promise<ExamStatusKVValue | null> => {
+    const { examStatusData, setExamStatusData } = useExamStatusStore.getState();
+    console.log("this is the exam status returned from Zustand", examStatusData);
+
+    if (examStatusData) {
+        console.log('Using cached exam status data from Zustand store');
+        return calculateExamStatus(examStatusData);
+    } else {
+        console.log('Fetching exam status data from backend');
+        const url = addBaseURL(`api/exam-status`);
+        const response = await fetch(url, { cache: "no-store" });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData);
+        }
+
+        const newData: ExamStatusZustand = await response.json();
+        setExamStatusData(newData); // Update Zustand store with new data
+
+        // Check if the backend returned data with a status property
+        if ('status' in newData) {
+            throw new Error('Backend data should not include a status property');
+        }
+
+        console.log("this is the exam status data", newData);
+        const updatedData = calculateExamStatus(newData);
+        return updatedData;
+    }
+};
+
+export function useExamStatus(): UseQueryResult<ExamStatusKVValue, Error> {
+    return useQuery({
+        queryKey: ['examStatus-v2'],
         queryFn: fetchExamStatus,
-        staleTime: 1000 * 60 * 60 * 24,
-        // 24 hours
-
+        staleTime: 1000 * 60 * 60 * 24, // 24 hours
     });
 }

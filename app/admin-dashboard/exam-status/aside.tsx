@@ -2,20 +2,25 @@
 import React, { useState, Suspense } from 'react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { ExamStatus, ExamStatusEnum } from '@/app/api/(admin)/admin-exam-status/route';
-import { useExamStatus } from '@/lib/tenstack-hooks/admin-exam-status';
+import { useAdminExamStatus } from '@/lib/tenstack-hooks/admin-exam-status';
 import { Badge } from '@/components/ui/badge';
 import { FaPlus, FaCalendarAlt } from 'react-icons/fa';
 import CustomCard from '@/components/customCard';
 import AddNewExam from './add-new-exam';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 
 function ExamStatusComponent() {
     const [revalidate, setRevalidate] = useState<string>('false');
-    const { data, status, error } = useExamStatus(revalidate).data;
+    const { data, status, error } = useAdminExamStatus(revalidate).data;
+    const queryClient = useQueryClient();
+
     const router = useRouter();
 
     const handleRevalidateClick = () => {
-        setRevalidate('true');
+        setRevalidate(revalidate === 'true' ? 'false' : 'true');
+        queryClient.invalidateQueries({ queryKey: ["admin-examStatus"] });
+
     };
 
     const renderExamCard = (exam: ExamStatus) => {

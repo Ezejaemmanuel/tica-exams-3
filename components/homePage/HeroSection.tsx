@@ -43,7 +43,7 @@
 import React, { Suspense } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { SignedIn, SignedOut } from '@clerk/nextjs'
+// import { SignedIn, SignedOut } from '@clerk/nextjs'
 import RegisteredOrNot from './registeredOrNot'
 import ButtonSkeleton from './buttonSkeleton'
 
@@ -53,8 +53,9 @@ const Header = () => {
             <Image
                 src="https://tansicollege.edu.ng/sites/default/files/styles/media_gallery_large/public/new_tour1.jpg?itok=8vycfFcs"
                 fill
+                priority={true}
                 quality={100}
-                loading='lazy'
+                // loading='lazy'
                 className="absolute z-0" alt={''} />
             <div className="absolute inset-0 bg-white/75 sm:bg-transparent sm:from-white/95 sm:to-white/25 sm:bg-gradient-to-r ">
             </div>

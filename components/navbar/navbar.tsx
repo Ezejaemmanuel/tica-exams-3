@@ -14,7 +14,7 @@ import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 
 const Navbar = async () => {
     return (
-        <nav className='sticky h-14 inset-x-0 top-0 z-30 w-full border-b border-blue-900 bg-black text-white transition-all'>
+        <nav className='sticky h-14 inset-x-0 top-8 z-30 w-full border-b border-blue-900 bg-black text-white transition-all'>
             <MaxWidthWrapper>
                 <div className='flex h-14 items-center justify-between'>
                     <Link href='/'

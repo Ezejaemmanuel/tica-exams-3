@@ -3,10 +3,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { getUserId } from '@/lib/auth/utils';
-import { FormData } from '@/components/register/mainForm';
 
 import { kv } from "@vercel/kv"
-import { safeKVOperation } from '../safeKvOperation';
+import { safeKVOperation } from '../../../lib/api/redis/safeKvOperation';
+import { setRegistrationStatus, RegistrationStatus } from '@/lib/api/redis/registeration-status';
+import { FormSchema } from '@/components/register/NewMainForm';
 
 export async function POST(request: NextRequest) {
     const userId = getUserId();
@@ -14,72 +15,105 @@ export async function POST(request: NextRequest) {
     if (!userId) {
         return NextResponse.json({ error: 'User is not authenticated.' }, { status: 401 });
     }
-    const formData: FormData = await request.json();
+    const formData: FormSchema = await request.json();
     console.log("see the data that is coming from the frontend ", formData);
-
+    const [classLevel_, month, year, uniqueId] = formData.examId.split('-');
+    console.log("this is the classlevel", classLevel_);
+    const lowerClassLevel = classLevel_.toLowerCase();
+    console.log("this is the lower classllevel", lowerClassLevel);
     // Convert class to lowercase and map to ClassLevel enum
-    const classLevel = formData.class.toLowerCase() === 'jss1' ? 'JSS1' : formData.class.toLowerCase() === 'ss1' ? 'SS1' : null;
+    const classLevel = lowerClassLevel === 'jss1' ? 'JSS1' : lowerClassLevel === 'ss1' ? 'SS1' : lowerClassLevel === 'jss2' ? 'JSS2' : null;
     if (!classLevel) {
         return NextResponse.json({ error: 'Invalid class level.' }, { status: 400 });
     }
 
     try {
-        // Check if a user with the same userAuthId already exists
-        const existingUser = await prisma.user.findUnique({
-            where: { id: userId },
-            select: {
-                id: true,
-                // other fields you want to select
-            }
-        });
-        const existingUserAuth = await prisma.userAuth.findUnique({
-            where: { id: userId },
-            select: {
-                id: true,
-                // other fields you want to select
-            }
-        });
-        if (!existingUserAuth) {
-            return NextResponse.json({ error: "User has not signed in" }, { status: 404 });
+        const user = await prisma.userAuth.findUnique(
+            { where: { id: userId } }
+        )
+        if (!user) {
+            return NextResponse.json({ error: 'User not found.' }, { status: 404 });
         }
-        if (existingUser) {
-            // Return an error if the user already exists
-            return NextResponse.json({ error: 'User has already been registered. Go to the dashboard to update your registration values' }, { status: 409 });
-        }
+        // Start a transaction to ensure atomicity
+        const result = await prisma.$transaction(async (prisma) => {
+            // Create the new user with all fields and mapped classLevel
+            // const newUser = await prisma.user.create({
+            //     data: {
+            //         id: userId,
+            //         officialEmail: formData.email,
+            //         name: formData.name,
+            //         class: classLevel_,
+            //         dob: new Date(formData.dob),
+            //         classLevel: classLevel, // Use the mapped classLevel
+            //         officialPhoneOrWhatsappNumber: formData.phoneNumber,
+            //         fullAddress: formData.address,
+            //         locality: formData.locality,
+            //         city: formData.city,
+            //         state: formData.state,
+            //         country: formData.country,
+            //         homeAddress: formData.address,
+            //         // Add any other fields that are required by the User model
+            //         userAuthId: userId,
+            //     },
+            // });
+            const dateOfBirth = new Date(formData.dateOfBirth);
+            const dateOfBaptism = formData.dateOfBaptism ? new Date(formData.dateOfBaptism) : null;
+            const dateOfHolyCommunion = formData.dateOfHolyCommunion ? new Date(formData.dateOfHolyCommunion) : null;
+            const dateOfHolyConfirmation = formData.dateOfHolyConfirmation ? new Date(formData.dateOfHolyConfirmation) : null;
 
-        // Create the new user with all fields and mapped classLevel
-        const newUser = await prisma.user.create({
-            data: {
-                id: userId,
-                officialEmail: formData.email,
-                name: formData.name,
-                class: formData.class,
-                dob: new Date(formData.dob),
-                classLevel: classLevel, // Use the mapped classLevel
-                officialPhoneOrWhatsappNumber: formData.phoneNumber,
-                fullAddress: formData.address,
-                locality: formData.locality,
-                city: formData.city,
-                state: formData.state,
-                country: formData.country,
-                homeAddress: formData.address,
-                // Add any other fields that are required by the User model
-                userAuthId: userId,
-            },
+            // Assuming the session or authentication logic to retrieve userId is handled elsewhere
+
+            // Insert the data into the database
+            const newUser = await prisma.user.create({
+                data: {
+                    id: userId, // Assuming this is a new ID generated for the user, or use an existing ID as needed
+                    name: formData.candidatesFullName,
+                    presentClass: formData.presentClass,
+                    class: classLevel_,
+                    dateOfBirth: dateOfBirth,
+                    officialPhoneOrWhatsappNumber: formData.phoneNumber,
+                    fullAddress: formData.residentialAddress,
+                    state: formData.stateOfOrigin,
+                    homeAddress: formData.homeTown,
+                    classLevel: classLevel, // Placeholder: Map formData to your ClassLevel enum as needed
+                    dateOfBaptism: dateOfBaptism,
+                    dateOfHolyCommunion: dateOfHolyCommunion,
+                    dateOfHolyConfirmation: dateOfHolyConfirmation,
+                    presentSchool: formData.presentSchool,
+                    finishedPrimary: formData.finishedPrimary,
+                    massServer: formData.massServer,
+                    piousSociety: formData.piousSociety,
+                    examId: formData.examId,
+                    fathersName: formData.fathersName,
+                    mothersName: formData.mothersName,
+                    localGovernmentArea: formData.localGovernmentArea,
+                    parentDeceased: formData.parentDeceased,
+                    catholic: formData.catholic,
+                    denomination: formData.denomination,
+                    supportsEntry: formData.supportsEntry,
+                    canSponsor: formData.canSponsor,
+                    candidateProfile: formData.candidateProfile,
+                    userAuthId: userId, // Link to the authenticated user's ID
+                    // Add any additional fields from formData as needed
+                },
+            });
+
+            // Create a payment confirmation for the user
+            const paymentConfirmation = await prisma.paymentConfirmation.create({
+                data: {
+                    userId: userId, // The ID of the user for whom the payment confirmation is being created
+                    examId: formData.examId, // The ID of the exam associated with the payment
+                    // Set any other fields that are required and do not have default values
+                },
+            });
+            await setRegistrationStatus(userId, RegistrationStatus.Registered);
+
+            return { newUser, paymentConfirmation };
         });
-        const newUserExam = await prisma.userExam.create({
-            data: {
-                id: userId, // Generate a unique ID for the UserExam
-                userId: newUser.id, // Set the userId to the ID of the newly created user
-                examId: 'jss1-1-2024', // Set the examId to 'jss1-1-2024'
-                // You can set other fields as needed
 
-            },
-        });
-        const yes = await safeKVOperation(() => kv.set(`isRegistered:${userId}`, true))
+        // Update the registration status in Redis
 
-
-        return NextResponse.json({ message: "registeration succesfully 0000000" }, { status: 200 });
+        return NextResponse.json({ message: "Registration successful" }, { status: 200 });
 
     } catch (error) {
         console.error('Request error', error);
@@ -90,69 +124,10 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
         }
     }
+
 }
 
 
-// pages/api/register.ts
-
-
-// export async function GET(req: NextRequest) {
-//     console.log('Received a request to check user registration status.');
-
-//     const userId = getUserId();
-//     console.log('Retrieved userId:', userId);
-
-//     if (!userId) {
-//         console.log('No userId found, returning false.');
-//         return NextResponse.json({ message: 'false' }, { status: 200 });
-//     }
-
-//     try {
-//         console.log('Looking up UserAuth with userId:', userId);
-//         const userAuth = await prisma.userAuth.findUnique({
-//             where: { id: userId },
-//             select: { id: true },
-//         });
-//         console.log('UserAuth result:', userAuth);
-
-//         // if (!userAuth) {
-//         //     console.log('UserAuth not found, returning false.');
-//         //     return NextResponse.json({ message: 'false' }, { status: 200 });
-//         // }
-
-//         console.log('Looking up User with userId:', userId);
-//         const user = await prisma.user.findUnique({
-//             where: { id: userId },
-//         });
-//         console.log('User result:', user);
-
-//         if (!user) {
-//             console.log('User not found, returning false.');
-//             return NextResponse.json({ message: 'false' }, { status: 200 });
-//         }
-
-//         console.log('Checking if all user fields are not null.');
-//         // const userFieldsAreNotNull = Object.values(user).some(field => !field);
-//         // console.log('Are all user fields not null?', userFieldsAreNotNull);
-
-//         // if (!user.city || !user.officialEmail || !user.id || !user.name) {
-//         //     console.log('One or more user fields are null, returning false.');
-//         //     return NextResponse.json({ message: 'false' }, { status: 200 });
-//         // }
-
-//         console.log('User is fully registered, returning true.');
-//         return NextResponse.json({ message: 'true' }, { status: 200 });
-//     } catch (error) {
-//         console.error('Request error', error);
-//         return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
-//     }
-// }
-
-// pages/api/register.ts
-
-// ... (other imports)
-
-// ... (other code)
 
 export async function GET(req: NextRequest) {
     const userId = getUserId();

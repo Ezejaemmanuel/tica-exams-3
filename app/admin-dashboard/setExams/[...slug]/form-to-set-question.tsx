@@ -49,13 +49,13 @@ export default function SetQuestionsCard({ questionNumber, questionSubject, exam
 
     useEffect(() => {
         // This will reset the form with the new values whenever formValues changes
-        console.log("this is the formValue", formValues);
+        // console.log("this is the formValue", formValues);
         reset(formValues);
     }, [formValues, reset]);
 
     const onSubmit = (values: FormValues) => {
         setFormValues(values); // Update the store with new form values
-        console.log(values);
+        // console.log(values);
     };
 
 

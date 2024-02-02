@@ -1,10 +1,10 @@
-import React from 'react'
-import ExamCard from './aside'
+// import React from 'react'
+// import ExamCard from '../aside'
 
-const ExamCardPage = () => {
-    return (
-        <ExamCard />
-    )
-}
+// const ExamCardPage = ({ params }: { params: { sub: string } }) => {
+//     return (
+//         <ExamCard />
+//     )
+// }
 
-export default ExamCardPage
+// export default ExamCardPage

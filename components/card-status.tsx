@@ -2,10 +2,12 @@
 import React from 'react';
 import { FaTimesCircle, FaCheckCircle, FaPlayCircle, FaRegCheckCircle } from 'react-icons/fa';
 import CustomCard from './customCard';
+import { useRouter } from 'next/navigation';
 
 interface StatusComponentProps {
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
     content: string;
+    examId?: string;
 }
 
 
@@ -45,14 +47,16 @@ export const ExamAvailable: React.FC<StatusComponentProps> = ({ setIsOpen, conte
 };
 
 // Exam Ongoing Component
-export const ExamOngoing: React.FC<StatusComponentProps> = ({ content, setIsOpen }) => {
+export const ExamOngoing: React.FC<StatusComponentProps> = ({ content, setIsOpen, examId }) => {
+    const router = useRouter();
+
     return (
         <CustomCard
             icon={FaPlayCircle}
             title="Exam Ongoing"
             content={content}
             buttonOneText="Start Exam"
-            buttonOneAction={() => {/* Start exam action */ }}
+            buttonOneAction={() => router.push(`/exam-instructions?examId=${examId}`)}
             cardColor="bg-red-500 animate-pulse"
             buttonOneColor="bg-blue-500"
             ringColor="ring-blue-300"

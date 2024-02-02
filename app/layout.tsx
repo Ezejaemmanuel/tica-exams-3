@@ -8,6 +8,8 @@ import { ThemeProvider } from '@/components/dark-mode-toogle';
 import Navbar from '@/components/navbar/navbar';
 import { Providers } from './provider';
 import AdminMessage from './adminMessage';
+import { CheckAuthenticatedUser } from './exam-countdown';
+import { Suspense } from 'react';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -35,7 +37,11 @@ export default function RootLayout({
 
           >
             <Providers>
+              <Suspense fallback={<div>loading</div>}>
+                <CheckAuthenticatedUser />
+              </Suspense>
               <Navbar />
+
               <AdminMessage />
               {children}
               <Footer />

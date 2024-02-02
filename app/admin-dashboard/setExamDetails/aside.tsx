@@ -32,31 +32,44 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from '@tanstack/react-query';
 
 const examDetailsSchema = z.object({
-    // examStartDate: z.date().min(new Date(), "Please enter the exam time"),
     examStartDate: z.date(),
-    classLevel: z.enum(["JSS1", "SS1"]),
+    classLevel: z.enum(["JSS1", "SS1", "JSS2"]),
     length: z.coerce.number().gte(1).lte(9999999999),
     examTime: z.string().min(1, "Please enter the exam time"),
+    uniqueId: z.string()
+        .min(1, "Please enter a unique identifier for the exam")
+        .regex(/^[a-zA-Z0-9_]*$/, "Unique identifier must not contain spaces or hyphens, only underscores are allowed"),
 });
 
 // Infer the TypeScript type from the Zod schema
 export type ExamDetails = z.infer<typeof examDetailsSchema>;
-
+export type UpdatedExamDetails = {
+    examStartDate: Date;
+    examId: string;
+    classLevel: "JSS1" | "SS1" | "JSS2";
+    length: number;
+    examTime: string;
+    uniqueId: string;
+};
 export function SetExamDetailsForm() {
     const router = useRouter();
+    const queryClient = useQueryClient();
+
     const form = useForm<ExamDetails>({
         resolver: zodResolver(examDetailsSchema),
         defaultValues: {
             length: 1,
+            uniqueId: '', // Add default value for the new field
         },
     });
 
 
     const createExamMutation = useMutation({
         mutationKey: ['createExam'],
-        mutationFn: async (examDetails: ExamDetails) => {
+        mutationFn: async (examDetails: UpdatedExamDetails) => {
             const response = await fetch('/api/create-exam', {
                 method: 'POST',
                 headers: {
@@ -72,6 +85,11 @@ export function SetExamDetailsForm() {
 
             return response.json();
         },
+        onSettled(data, error, variables, context) {
+            queryClient.invalidateQueries({ queryKey: ["examStatus"] });
+            queryClient.invalidateQueries({ queryKey: ["admin-examStatus"] });
+
+        },
         onSuccess: () => {
             toast.loading(' redirecting to dashboard in 2 seconds ');
 
@@ -85,6 +103,7 @@ export function SetExamDetailsForm() {
     });
 
     const onSubmit = (values: ExamDetails) => {
+        // console.log("this is the values in the frontend", values);
         // Parse the examStartDate to create a Date object
         const examDate = new Date(values.examStartDate);
         // Parse the examTime string to extract hours and minutes
@@ -93,12 +112,19 @@ export function SetExamDetailsForm() {
         examDate.setHours(hours, minutes, 0, 0);
 
         // Create a new object with the updated examTime as a Date object
+        const monthShortForm = format(examDate, 'MMM').toLowerCase(); // e.g., 'jan'
+        const year = format(examDate, 'yyyy'); // e.g., '2023'
+        const examId = `${values.classLevel}-${monthShortForm}-${year}-${values.uniqueId}`;
+        console.log("this is the examId that is set", examId);
+
+        // Create a new object with the updated examTime and examId
         const updatedValues = {
             ...values,
             examStartDate: examDate,
+            examId: examId // Include the constructed examId
         };
 
-        console.log("this is the values in the frontend 00000", updatedValues);
+        // console.log("this is the values in the frontend 00000", updatedValues);
 
         toast.promise(
             createExamMutation.mutateAsync(updatedValues),
@@ -175,6 +201,7 @@ export function SetExamDetailsForm() {
                                     </FormControl>
                                     <SelectContent>
                                         <SelectItem value="JSS1">jss1</SelectItem>
+                                        <SelectItem value="JSS2">jss2</SelectItem>
                                         <SelectItem value="SS1">ss1</SelectItem>
                                     </SelectContent>
                                 </Select>
@@ -217,6 +244,22 @@ export function SetExamDetailsForm() {
                                 </FormControl>
                                 <FormDescription className="text-gray-500 dark:text-gray-400">
                                     Enter the duration of the exam in minutes.
+                                </FormDescription>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="uniqueId"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel className="font-semibold text-gray-700 dark:text-gray-300">Unique Identifier</FormLabel>
+                                <FormControl>
+                                    <Input type="text" placeholder="Enter a unique identifier" {...field} className="border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm" />
+                                </FormControl>
+                                <FormDescription className="text-gray-500 dark:text-gray-400">
+                                    Enter a unique identifier to differentiate this exam.
                                 </FormDescription>
                                 <FormMessage />
                             </FormItem>

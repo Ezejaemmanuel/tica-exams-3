@@ -15,20 +15,20 @@ import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 
-export type FormData = {
-    name: string;
-    email: string;
-    class: string;
-    dob: string;
-    phoneNumber: string;
-    address: string;
-    locality: string;
-    city: string;
-    state: string;
-    country: string;
-};
+// export type FormData = {
+//     name: string;
+//     email: string;
+//     class: string;
+//     dob: string;
+//     phoneNumber: string;
+//     address: string;
+//     locality: string;
+//     city: string;
+//     state: string;
+//     country: string;
+// };
 
-const registerUser = async (userData: FormData) => {
+const registerUser = async (userData: FormSchema) => {
     const response = await fetch('api/register', {
         method: 'POST',
         headers: {
@@ -46,17 +46,35 @@ const registerUser = async (userData: FormData) => {
     //console.log("this is the transactions that is returned", data);
     return data;
 };
+const formSchema = z.object({
+    name: z.string().min(1, { message: "Name is required" }),
+    email: z.string().email().min(1, { message: "Email is required" }),
+    examId: z.string().min(1, { message: "Class is required" }),
+    dob: z.string().min(1, { message: "Date of Birth is required" }),
+    phoneNumber: z.string().min(1, { message: "Phone number is required" }).refine((data) => {
+        if (!data) return false; // Check if there's any input
+        const phoneNumber = parsePhoneNumberFromString(data);
+        return phoneNumber?.isValid() || false; // Check if the phone number is valid
+    }, { message: "Invalid phone number" }),
+    address: z.string().min(1, { message: "Address is required" }),
+    locality: z.string().min(1, { message: "Locality is required" }),
+    city: z.string().min(1, { message: "City is required" }),
+    state: z.string().min(1, { message: "State is required" }),
+    country: z.string().min(1, { message: "Countrry is required" }),
+});
+export type FormSchema = z.infer<typeof formSchema>;
+
 export const MainForm: React.FC = () => {
     const router = useRouter();
-    const mutation = useMutation<{ message: string }, Error, FormData>({
+    const mutation = useMutation<{ message: string }, Error, FormSchema>({
         mutationKey: ['registerUser'],
         mutationFn: registerUser,
         onSuccess(data, variables, context) {
-
-            toast.loading(` successfully registered ....redirecting to dashboard in 2 seconds`, { duration: 2000, important: true })
+            const examId = variables.examId
+            toast.loading(` redirecting to payment page `, { duration: 1000, important: true })
             setTimeout(() => {
-                router.push('/student-dashboard');
-            }, 2000);
+                router.push(`/make-payment?examId=${examId}`);
+            }, 1000);
 
         },
         onError(error, variables, context) {
@@ -66,7 +84,8 @@ export const MainForm: React.FC = () => {
     });
 
     const onSubmit = (data: FieldValues) => {
-        const formData = data as FormData; // Type assertion
+        const formData = data as FormSchema; // Type assertion
+
         console.log("thsi is the formdata", formData);
         toast.promise(
             mutation.mutateAsync(formData),
@@ -79,22 +98,6 @@ export const MainForm: React.FC = () => {
             }
         );
     }
-    const formSchema = z.object({
-        name: z.string().min(1, { message: "Name is required" }),
-        email: z.string().email().min(1, { message: "Email is required" }),
-        class: z.string().min(1, { message: "Class is required" }),
-        dob: z.string().min(1, { message: "Date of Birth is required" }),
-        phoneNumber: z.string().min(1, { message: "Phone number is required" }).refine((data) => {
-            if (!data) return false; // Check if there's any input
-            const phoneNumber = parsePhoneNumberFromString(data);
-            return phoneNumber?.isValid() || false; // Check if the phone number is valid
-        }, { message: "Invalid phone number" }),
-        address: z.string().min(1, { message: "Address is required" }),
-        locality: z.string().min(1, { message: "Locality is required" }),
-        city: z.string().min(1, { message: "City is required" }),
-        state: z.string().min(1, { message: "State is required" }),
-        country: z.string().min(1, { message: "Countrry is required" }),
-    });
 
     const [activeStep, setActiveStep] = useState(0);
     const form = useForm({
@@ -108,7 +111,7 @@ export const MainForm: React.FC = () => {
         let isValid;
         switch (activeStep) {
             case 0:
-                isValid = await trigger(["name", "email", "class"]);
+                isValid = await trigger(["name", "email", "examId"]);
                 break;
             case 1:
                 isValid = await trigger(["dob", "phoneNumber", "gender"]);

@@ -44,7 +44,7 @@ import { getUserData } from './cache';
 // Function to get user data, first from cache, then from database if necessary
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
-    console.log('Received GET request for user data');
+    // console.log('Received GET request for user data');
     const userId = getUserId();
 
     if (!userId) {
