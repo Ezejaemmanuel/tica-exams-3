@@ -38,6 +38,7 @@ import { getUserId } from '@/lib/auth/utils';
 import { User } from '@prisma/client'; // Import the User type from Prisma client
 import { kv } from '@vercel/kv';
 import { getUserData } from './cache';
+import { getExamIdForUser } from '@/lib/api/redis/exam-id';
 
 // Define the type for the KV operation function
 
@@ -51,9 +52,12 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         console.log('User is not authenticated, no userId found');
         return NextResponse.json({ error: 'User is not authenticated.' }, { status: 401 });
     }
-
+    const examId = await getExamIdForUser(userId);
+    if (!examId) {
+        return NextResponse.json({ error: "there is no exam id for this user" }, { status: 404 })
+    }
     console.log('Authenticated userId:', userId);
-    const user = await getUserData(userId);
+    const user = await getUserData(userId, examId);
 
     if (!user) {
         console.log('User not found for userId:', userId);

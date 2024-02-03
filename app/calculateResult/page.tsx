@@ -1,7 +1,7 @@
 // pages/calculateResult.tsx
 "use client";
 import { useEffect } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { addBaseURL } from '@/lib/addBaseUrl';
 import { PuffLoader } from 'react-spinners';
 import { MdCheckCircle, MdCancel } from 'react-icons/md';
@@ -12,6 +12,7 @@ import { useRouter } from 'next/navigation';
 const CalculateResult = () => {
     const router = useRouter();
     const { shouldSubmit, setShouldSubmit } = useExamSubmitStore();
+    const queryClient = useQueryClient();
 
     const { updateUserExamStatus } = useUserExamStatusStore();
 
@@ -35,6 +36,7 @@ const CalculateResult = () => {
         onSuccess: () => {
             updateUserExamStatus(UserExamStatus.ResultPresent);
             setShouldSubmit(SubmitState.Submitted)
+            queryClient.invalidateQueries({ queryKey: ['userInfo'] });
             router.push('/student-dashboard');
         },
     });
@@ -44,7 +46,7 @@ const CalculateResult = () => {
     }, []);
 
     return (
-        <div className="flex justify-center items-center bg-white black:bg-black h-screen">
+        <div className="flex justify-center items-center bg-white dark:bg-black h-screen">
             {isPending && <PuffLoader color="#36D7B7" size={150} />}
             {isError && <MdCancel className="text-red-500" size="150" />}
             {isSuccess && <MdCheckCircle className="text-green-500" size="150" />}
