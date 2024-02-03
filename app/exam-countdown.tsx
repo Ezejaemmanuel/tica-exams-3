@@ -82,7 +82,9 @@ const ExamCountdown: React.FC = () => {
 
                     date={examStatusData && examStatusData.examDateTime ? new Date(examStatusData.examDateTime) : new Date()}
                     renderer={({ days, hours, minutes, seconds, completed }) => {
-
+                        if (completed) {
+                            return <IsGoingOn />
+                        }
                         const isFinalHour = days === 0 && hours < 1;
                         const countdownClass = isFinalHour ? 'bg-red-500 animate-pulse' : 'bg-green-500';
                         return (

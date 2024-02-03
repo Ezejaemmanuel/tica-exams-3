@@ -59,7 +59,7 @@ const fetchExamStatus = async (): Promise<ExamStatusKVValue | null> => {
         }
 
         const newData: ExamStatusZustand = await response.json();
-        setExamStatusData(newData); // Update Zustand store with new data
+        setExamStatusData(newData, 2); // Update Zustand store with new data
 
         // Check if the backend returned data with a status property
         if ('status' in newData) {

@@ -38,14 +38,18 @@ function ExamStatusComponent() {
                 title={`Exam ID: ${exam.exam.id}`}
                 content={`For ${exam.exam.classLevel}, which ${isUpcoming ? 'will take place on' : 'took place on'} ${dateDisplay} (${fromNow}). The exam ${isUpcoming ? 'will last' : 'lasted'} for ${durationDisplay}. ${questionsDisplay} ${studentsDisplay}`}
                 cardColor="bg-white dark:bg-black text-black dark:text-white"
-                ringColor="ring-blue-200 dark:ring-blue-900"
+                ringColor="ring-blue-200 dark:ring-blue-900 max-w-sm min-w-sm"
                 contentTextSize='text-xs'
                 buttonOneText='set questions'
                 buttonOneAction={() => router.push(`/admin-dashboard/setExams/english/${exam.exam.id}`)}
+                buttonTwoText='edit exam'
+                buttonTwoAction={() => router.push(`/admin-dashboard/editExamDetails?examId=${exam.exam.id}`)}
             // Add any additional props you need for CustomCard
             />
         );
     };
+
+
 
     return (
         <div className="space-y-4">

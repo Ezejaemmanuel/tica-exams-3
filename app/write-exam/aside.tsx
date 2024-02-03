@@ -68,11 +68,6 @@ export const UserQuestion: React.FC<UserQuestionProps> = ({ initialAcronym }) =>
     // console.log("this is he user answers", userAnswers);
     console.log("this is the currentAcronymn", currentAcronym);
     const currentUserAnser = userAnswers[currentAcronym];
-    useEffect(() => {
-        if (shouldSubmit === SubmitState.Submitted) {
-            router.push('/result'); // Redirect to the /result page
-        }
-    }, [shouldSubmit, router]);
 
     const form = useForm<FormSchemaForAnswers>({
         resolver: zodResolver(formSchema),
@@ -135,13 +130,14 @@ export const UserQuestion: React.FC<UserQuestionProps> = ({ initialAcronym }) =>
             setShouldSubmit(SubmitState.Submitted);
             sessionStorage.clear();
 
-            router.push('/result');
+            router.push('/student-dashboard');
 
         },
         onError: (error) => {
             setAlertContent(<MdCancel className="text-red-500" size="100" />);
             setAlertBgColor('bg-red-500');
             setTimeout(() => setAlertOpen(false), 3000);
+            router.push("/student-dashboard")
         },
     });
 
@@ -166,23 +162,10 @@ export const UserQuestion: React.FC<UserQuestionProps> = ({ initialAcronym }) =>
     }
 
     useEffect(() => {
-        let isMounted = true; // Flag to track the component's mount status
-
         if (shouldSubmit === SubmitState.ShouldSubmit) {
-            calculateResultMutation.mutateAsync(initialAcronym).then(() => {
-                if (isMounted) {
-                    // Change the state to prevent re-triggering the mutation
-                    // For example, set it to Submitted or NotSubmit based on your logic
-                    setShouldSubmit(SubmitState.Submitted);
-                }
-            });
+            router.push('/calculateResult'); // Redirect to the calculateResult page
         }
-
-        // Cleanup function to set isMounted to false when the component unmounts
-        return () => {
-            isMounted = false;
-        };
-    }, [shouldSubmit, calculateResultMutation, initialAcronym, setShouldSubmit]);
+    }, [shouldSubmit, router]);
 
 
     const submitQuestionMutation = useMutation<{ message: string }, Error, FormSchemaForAnswers>({
@@ -250,7 +233,7 @@ export const UserQuestion: React.FC<UserQuestionProps> = ({ initialAcronym }) =>
                             <button className="px-4 py-2 rounded text-white bg-gray-500 hover:bg-gray-600">Cancel</button>
                         </AlertDialogCancel> */}
                         <AlertDialogAction asChild>
-                            <Link href={"/user-dashboard"} className="px-4 py-2 rounded text-white bg-blue-500 hover:bg-blue-600" >Confirm</Link>
+                            <Link href={"/student-dashboard"} className="px-4 py-2 rounded text-white bg-blue-500 hover:bg-blue-600" >Confirm</Link>
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

@@ -1,26 +1,42 @@
-import { $Enums } from "@prisma/client";
+import { safeKVOperation } from "@/lib/api/redis/safeKvOperation";
+import { PrismaClient, User, PaymentConfirmation, UserExam, Exam, Result, $Enums } from "@prisma/client";
 import { kv } from "@vercel/kv";
-import { safeKVOperation } from "../../../lib/api/redis/safeKvOperation";
-import { prisma } from "@/lib/db";
-import { Prisma, User, PaymentConfirmation, UserExam, Exam, Result } from "@prisma/client";
-// Define a type that extends the User type with additional fields for paymentConfirmation and userExams
 
-// Adjust the type to match the structure returned by the Prisma query
+const prisma = new PrismaClient();
+
+type ExtendedExam = Exam & {
+    englishQuestionsCount: number;
+    mathQuestionsCount: number;
+    generalStudiesQuestionsCount: number;
+};
+
 export type ExtendedUserData = User & {
     paymentConfirmation?: PaymentConfirmation | null;
     userExam: (UserExam & {
-        exam: Exam;
+        exam: ExtendedExam;
         result?: Result | null;
     })[];
+    submissionStatus?: SubmissionStatus;
 };
 
-export async function getUserData(userId: string): Promise<ExtendedUserData | null> {
-    // const cacheKey = `tica:user:${userId}`;
-    // console.log('Attempting to retrieve user from cache with key:', cacheKey);
-    // let user: ExtendedUserData | null = await safeKVOperation(() => kv.get<ExtendedUserData>(cacheKey));
+enum SubmissionStatus {
+    UnsubmittedExam = "UnsubmittedExam",
+    AllSubmitted = "AllSubmitted",
+}
 
-    // if (!user) {
-    // console.log('User not found in cache, fetching from database for userId:', userId);
+export async function checkSubmissionStatus(userId: string, examId: string): Promise<SubmissionStatus> {
+    const redisAnswersExist = await kv.exists(`tica:answers:${userId}`);
+    const dbResultExist = await prisma.result.findFirst({
+        where: {
+            userId: userId,
+            examId: examId,
+        },
+    });
+
+    return redisAnswersExist && !dbResultExist ? SubmissionStatus.UnsubmittedExam : SubmissionStatus.AllSubmitted;
+}
+
+export async function getUserData(userId: string, examId: string): Promise<ExtendedUserData | null> {
     const user = await prisma.user.findUnique({
         where: { id: userId },
         include: {
@@ -34,21 +50,51 @@ export async function getUserData(userId: string): Promise<ExtendedUserData | nu
         }
     });
 
-    // if (user) {
-    // console.log('User fetched from database:', user);
-    // Cache the user data for 24 hours if fetched from the database
-    // await safeKVOperation(() => kv.set(cacheKey, user));
-    // console.log('User data cached for 24 hours with key:', cacheKey);
-    // } else {
-    // console.log('User not found in database for userId:', userId);
-    // return null;
-    // }
-    // } else {
-    // console.log('User retrieved from cache:', user);
-    // }
+    if (!user) return null;
 
-    return user;
+    const userExamsExtended = await Promise.all(user.userExam.map(async (ue) => {
+        const englishQuestionsCount = await prisma.englishQuestion.count({ where: { examId: ue.examId } });
+        const mathQuestionsCount = await prisma.mathQuestion.count({ where: { examId: ue.examId } });
+        const generalStudiesQuestionsCount = await prisma.generalStudiesQuestion.count({ where: { examId: ue.examId } });
+
+        return {
+            ...ue,
+            exam: {
+                ...ue.exam,
+                englishQuestionsCount,
+                mathQuestionsCount,
+                generalStudiesQuestionsCount,
+            }
+        };
+    }));
+
+    const submissionStatus = await checkSubmissionStatus(userId, examId);
+
+    // Construct the final object with explicit typing
+    const extendedUserData: ExtendedUserData = {
+        ...user,
+        userExam: userExamsExtended,
+        submissionStatus,
+    };
+
+    return extendedUserData;
 }
+
+
+// if (user) {
+// console.log('User fetched from database:', user);
+// Cache the user data for 24 hours if fetched from the database
+// await safeKVOperation(() => kv.set(cacheKey, user));
+// console.log('User data cached for 24 hours with key:', cacheKey);
+// } else {
+// console.log('User not found in database for userId:', userId);
+// return null;
+// }
+// } else {
+// console.log('User retrieved from cache:', user);
+// }
+
+
 
 
 // export async function deleteUserFromCache(userId: string): Promise<void> {

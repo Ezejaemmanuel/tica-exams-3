@@ -49,6 +49,13 @@ export async function getExamStatusKV(examId: string): Promise<ExamStatusZustand
     return examStatus;
 }
 
+export async function deleteExamStatusKV(examId: string): Promise<void> {
+    const key = `tica:exam-status:all:${examId}`;
+    // Use safeKVOperation to handle potential errors gracefully
+    await safeKVOperation(() => kv.del(key));
+    console.log(`Deleted exam status for examId: ${examId} from Redis cache.`);
+}
+
 
 
 // Function to update only the exam status without affecting other properties

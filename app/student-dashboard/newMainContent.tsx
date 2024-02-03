@@ -7,11 +7,35 @@ import { CardContent, Card, CardTitle, CardHeader } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { ExamStatusPage } from '@/components/exam-status/aside';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
 
 export default function MainContents() {
     const { data: userInfo, isLoading, isError } = useUserInfo();
     const [isOpen, setIsOpen] = useState(false);
 
+    const calculatePercentage = (score: number | undefined, total: number) => {
+        score = score ?? 0; // Provide a default value of 0 if score is undefined
+        return ((score / total) * 100).toFixed(2);
+    };
+    console.log("this is hte userinfo", userInfo);
+    const renderSubmissionStatusCard = () => {
+        if (!userInfo || userInfo.submissionStatus === null) return null;
+        const submissionStatusMessage = userInfo.submissionStatus === 'UnsubmittedExam' ?
+            <p className="text-red-500 text-2xl animate-pulse">You have unsubmitted exams.<Link href={'/calculateResult'}><Badge className=''>submit</Badge></Link></p> :
+            <p>All exams submitted.</p>;
+
+        return (
+            <Card className="bg-gray-100 dark:bg-gray-800 rounded-lg shadow-lg mt-6">
+                <CardHeader>
+                    <CardTitle className="text-yellow-500 md:text-2xl lg:text-3xl">Submission Status</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                    {submissionStatusMessage}
+                </CardContent>
+            </Card>
+        );
+    };
 
     return (
         <div className="flex w-full lg:w-[90%] flex-col md:flex-row gap-6 md:gap-12">
@@ -104,6 +128,38 @@ export default function MainContents() {
                         </CardContent>
                     </Card>
                 )}
+                {
+                    userInfo.userExam && userInfo.userExam.length > 0 &&
+                    (<div className="w-full md:w-2/3">
+                        <Card className="bg-gray-100 dark:bg-gray-800 rounded-lg shadow-lg mt-6">
+                            <CardHeader>
+                                <CardTitle className="text-yellow-500 md:text-2xl lg:text-3xl">Your Results</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-2">
+                                {userInfo.userExam?.map((examInfo, index) => (
+                                    <div key={index} className="space-y-4">
+                                        <h3 className="text-lg font-semibold">{examInfo.exam.classLevel} Exam</h3>
+                                        {examInfo.result ? (
+                                            <>
+                                                <p>English: {examInfo.result.englishScore}/{examInfo.exam.englishQuestionsCount} ({calculatePercentage(examInfo.result.englishScore, examInfo.exam.englishQuestionsCount)}%)</p>
+                                                <p>Maths: {examInfo.result.mathsScore}/{examInfo.exam.mathQuestionsCount} ({calculatePercentage(examInfo.result.mathsScore, examInfo.exam.mathQuestionsCount)}%)</p>
+                                                <p>General Studies: {examInfo.result.generalStudiesScore}/{examInfo.exam.generalStudiesQuestionsCount} ({calculatePercentage(examInfo.result.generalStudiesScore, examInfo.exam.generalStudiesQuestionsCount)}%)</p>
+                                                <p className="font-bold">Aggregate: {examInfo.result?.aggregate}</p>
+                                            </>
+                                        ) : (
+                                            <p>No results available</p>
+                                        )}
+                                    </div>
+                                ))}
+                            </CardContent>
+                        </Card>
+                    </div>)
+
+                }
+                <div className="w-full md:w-2/3">
+                    {renderSubmissionStatusCard()}
+                    {/* Other components and JSX */}
+                </div>
             </div>
         </div>
     );

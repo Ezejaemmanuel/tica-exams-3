@@ -6,7 +6,6 @@ import { kv } from '@vercel/kv';
 import { safeKVOperation } from '../../../lib/api/redis/safeKvOperation';
 import { UpdatedExamDetails } from '@/app/admin-dashboard/setExamDetails/aside';
 import { deleteExamStatusCache } from '../(admin)/admin-exam-status/cache';
-import { deleteAllExamIdsFromCache } from '@/lib/api/redis/exam-id';
 import { setExamStatusKV } from '@/lib/api/redis/exam-status';
 import { ExamStatus } from '../(admin)/admin-exam-status/route';
 
@@ -71,13 +70,12 @@ export async function POST(request: NextRequest) {
         });
         const cacheKey = 'tica:exam-status';
 
-        const [kvResult, cacheResult, _] = await Promise.all([
+        const [kvResult, cacheResult] = await Promise.all([
             setExamStatusKV(examId, {
                 examDateTime,
                 length,
             }),
             deleteExamStatusCache(cacheKey),
-            deleteAllExamIdsFromCache()
         ]);
         if (kvResult === null) {
             console.error('Failed to set KV value for exam status');
