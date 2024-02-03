@@ -7,7 +7,7 @@ import { safeKVOperation } from '../../../lib/api/redis/safeKvOperation';
 import { UpdatedExamDetails } from '@/app/admin-dashboard/setExamDetails/aside';
 import { deleteExamStatusCache } from '../(admin)/admin-exam-status/cache';
 import { setExamStatusKV } from '@/lib/api/redis/exam-status';
-import { ExamStatus } from '../(admin)/admin-exam-status/route';
+import { ExamStatus } from '../(admin)/admin-exam-status/cache';
 
 
 interface ExamStatusKVValue {

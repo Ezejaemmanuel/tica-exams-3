@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, Suspense } from 'react';
 import { format, formatDistanceToNow } from 'date-fns';
-import { ExamStatus, ExamStatusEnum } from '@/app/api/(admin)/admin-exam-status/route';
+import { ExamStatus, ExamStatusEnum } from '@/app/api/(admin)/admin-exam-status/cache';
 import { useAdminExamStatus } from '@/lib/tenstack-hooks/admin-exam-status';
 import { Badge } from '@/components/ui/badge';
 import { FaPlus, FaCalendarAlt } from 'react-icons/fa';

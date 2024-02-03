@@ -2,32 +2,14 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
-import { deleteExamStatusCache, getExamStatusCache, setExamStatusCache } from './cache';
+import { ExamStatus, ExamStatusEnum, deleteExamStatusCache, getExamStatusCache, setExamStatusCache } from './cache';
 import { Exam } from '@prisma/client';
 // types/ExamStatusTypes.ts
 
-export enum ExamStatusEnum {
-    NoExamYet = 'NO_EXAM_YET',
-    ExamData = 'EXAM_DATA',
-}
 
-import { Exam as PrismaExam, EnglishQuestion, GeneralStudiesQuestion, MathQuestion, UserExam } from '@prisma/client';
+
 import { checkAuthPermission } from '@/lib/auth/utils';
 
-export type ExamStatus = {
-    exam: {
-        id: PrismaExam['id'];
-        classLevel: PrismaExam['classLevel'];
-        date: PrismaExam['date'];
-        startTime: PrismaExam['startTime'];
-        lengthOfExam: PrismaExam['lengthOfExam'];
-
-    };
-    englishQuestionsCount: number;
-    generalStudiesQuestionsCount: number;
-    mathQuestionsCount: number;
-    usersWritingExamCount: number;
-};
 
 export async function GET(req: NextRequest) {
     await checkAuthPermission("only_admin_and_superadmin");

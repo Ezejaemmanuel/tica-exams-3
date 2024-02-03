@@ -1,6 +1,6 @@
 // hooks/useExamStatus.ts
 
-import { ExamStatus, ExamStatusEnum } from '@/app/api/(admin)/admin-exam-status/route';
+import { ExamStatus, ExamStatusEnum } from '@/app/api/(admin)/admin-exam-status/cache';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { addBaseURL } from '../addBaseUrl';
 
