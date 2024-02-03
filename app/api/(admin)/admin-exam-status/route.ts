@@ -29,7 +29,7 @@ export type ExamStatus = {
     usersWritingExamCount: number;
 };
 
-export async function GET(req: NextRequest): Promise<NextResponse> {
+export async function GET(req: NextRequest) {
     await checkAuthPermission("only_admin_and_superadmin");
 
     const revalidate = req.nextUrl.searchParams.get('revalidate') === 'true';
