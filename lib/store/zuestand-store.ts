@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import { StorageValue, persist } from 'zustand/middleware';
 import superjson from 'superjson';
-import { ExamInstructionsProps } from '@/app/api/exam-Summary/route';
+import { ExamInstructionsProps } from '@/app/api/exam-Summary/types';
 import { User } from '@prisma/client';
 import { UserExamStatus } from '../api/redis/exam-status';
 export interface FormValues {

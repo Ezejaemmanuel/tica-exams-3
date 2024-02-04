@@ -6,8 +6,6 @@ import { z } from 'zod';
 import { RadioGroupItem, RadioGroup } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import BatteryStatus from "./[sub]/_exam-components/batteryStatus";
-import { useUserQuestion } from "@/lib/tenstack-hooks/userQuestion";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useEffect, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
@@ -27,6 +25,7 @@ import { UserExamStatus } from '@/lib/api/redis/exam-status';
 import Link from 'next/link';
 import { MdCheckCircle, MdCancel } from 'react-icons/md';
 import { useRouter } from 'next/navigation';
+import { useUserQuestion } from '@/lib/tenstack-hooks/userQuestion';
 
 const formSchema = z.object({
     selectedOption: z.enum(["A", "B", "C", "D", "non"]).optional(),
@@ -323,7 +322,7 @@ export const UserQuestion: React.FC<UserQuestionProps> = ({ initialAcronym }) =>
                         <Button
                             type="button"
                             onClick={handleSubmitButtonClick}
-                            className="fixed  bottom-1 left-1 w-auto sm:w-auto px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                            className="fixed  bottom-[5%] left-[30%] w-auto sm:w-auto px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
                         >
                             Submit
                         </Button>

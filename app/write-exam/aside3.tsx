@@ -7,9 +7,9 @@ import { z } from 'zod';
 import { RadioGroupItem, RadioGroup } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import BatteryStatus from "./[sub]/_exam-components/batteryStatus";
 import { useUserQuestion } from "@/lib/tenstack-hooks/userQuestion";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import BatteryStatus from './batteryStatus';
 
 const formSchema = z.object({
     selectedOption: z.enum(["optionA", "optionB", "optionC", "optionD"]).optional(),

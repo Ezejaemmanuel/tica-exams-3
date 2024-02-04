@@ -1,7 +1,7 @@
 // hooks/useQuestions.ts
 import { useSuspenseQuery, UseSuspenseQueryResult } from '@tanstack/react-query';
 import { addBaseURL } from '../addBaseUrl';
-import { Question } from '@/app/api/(admin)/get-all-questions/route';
+import { Question } from '@/app/api/(admin)/get-all-questions/types';
 
 
 

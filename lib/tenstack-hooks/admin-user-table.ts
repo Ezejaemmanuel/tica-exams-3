@@ -1,4 +1,4 @@
-import { UsersResponse } from '@/app/api/(admin)/users-table/route';
+import { UsersResponse } from '@/app/api/(admin)/users-table/types';
 import { QueryKey, useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { useDebounce } from '@uidotdev/usehooks';
 import { addBaseURL } from '../addBaseUrl';

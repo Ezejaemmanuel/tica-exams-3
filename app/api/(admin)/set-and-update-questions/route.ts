@@ -5,15 +5,7 @@ import { prisma } from '@/lib/db';
 import { FormValues } from '@/app/admin-dashboard/setExams/[...slug]/new-form';
 import { checkAuthPermission } from '@/lib/auth/utils';
 
-export interface QuestionData {
-    id?: string;
-    question: string;
-    optionA: string;
-    optionB: string;
-    optionC: string;
-    optionD: string;
-    correctAnswer: 'A' | 'B' | 'C' | 'D';
-}
+
 async function checkExamExists(examId: string) {
     const exam = await prisma.exam.findUnique({
         where: { id: examId },

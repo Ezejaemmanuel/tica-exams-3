@@ -3,16 +3,7 @@ import { prisma } from '@/lib/db';
 import { safeKVOperation } from '../../../../lib/api/redis/safeKvOperation';
 import { checkAuthPermission } from '@/lib/auth/utils';
 
-export type Question = {
-    id: string;
-    question: string;
-    optionA: string;
-    optionB: string;
-    optionC: string;
-    optionD: string;
-    correctAnswer: string;
-    examId: string;
-};
+
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
     await checkAuthPermission("only_admin_and_superadmin");

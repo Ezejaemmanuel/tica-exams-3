@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { addBaseURL } from '@/lib/addBaseUrl';
 import { formatDistanceToNow } from 'date-fns';
 import { toast } from 'sonner';
-import { PaymentConfirmationWithUser } from '@/app/api/(admin)/getPaymentProofs/route';
+import { PaymentConfirmationWithUser } from '@/app/api/(admin)/getPaymentProofs/types';
 
 
 

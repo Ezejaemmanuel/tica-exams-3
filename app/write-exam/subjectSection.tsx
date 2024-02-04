@@ -4,7 +4,7 @@ import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { useExamSummaryZuestanded } from '@/lib/tenstack-hooks/exam-summary-2';
 import { useClickedQuestionBadgeStore, useDrawerStore, useQuestionStore, useUserAnswersStore } from '@/lib/store/zuestand-store';
-import { ExamSubject } from '../api/exam-Summary/route';
+import { ExamSubject } from '../api/exam-Summary/types';
 import { FormSchemaForAnswers } from './aside';
 import { addBaseURL } from '@/lib/addBaseUrl';
 import { useMutation } from '@tanstack/react-query';

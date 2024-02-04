@@ -1,5 +1,5 @@
 import { useExamStore } from '../store/zuestand-store';
-import { ExamInstructionsProps } from '@/app/api/exam-Summary/route';
+import { ExamInstructionsProps } from '@/app/api/exam-Summary/types';
 import { addBaseURL } from '../addBaseUrl';
 import { useSuspenseQuery } from '@tanstack/react-query';
 

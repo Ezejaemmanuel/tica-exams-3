@@ -1,9 +1,9 @@
 
 import React, { Suspense } from 'react'
-import BatteryStatus from './[sub]/_exam-components/batteryStatus'
 import { Button } from '@/components/ui/button'
 import SubjectBadges from './subjectSection'
 import ExamCountdown from './exam-countdown'
+import BatteryStatus from './batteryStatus'
 
 const SideBarAndCo = () => {
     return (

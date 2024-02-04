@@ -1,4 +1,4 @@
-import { ExamInstructionsProps } from '@/app/api/exam-Summary/route';
+import { ExamInstructionsProps } from '@/app/api/exam-Summary/types';
 import { QueryKey } from '@tanstack/react-query';
 // hooks/useExamQuery.ts
 import { useSuspenseQuery } from '@tanstack/react-query';

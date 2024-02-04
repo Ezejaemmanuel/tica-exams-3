@@ -3,14 +3,12 @@ import { PrismaClient, PaymentConfirmation, User, Prisma } from "@prisma/client"
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { checkAuthPermission } from "@/lib/auth/utils";
+import { PaymentConfirmationWithUser } from "./types";
 
 // Define a type for the payment confirmation with user details
-export type PaymentConfirmationWithUser = PaymentConfirmation & {
-    user: Pick<User, 'id' | 'name' | "officialPhoneOrWhatsappNumber">;
-};
 
 // Function to get payment confirmations from the database
-export async function getPaymentConfirmations(page: number, size: number): Promise<PaymentConfirmationWithUser[]> {
+async function getPaymentConfirmations(page: number, size: number): Promise<PaymentConfirmationWithUser[]> {
     await checkAuthPermission("only_admin_and_superadmin");
 
     console.log(`Fetching payment confirmations with a payment URL for page ${page} with size ${size}`);
@@ -69,4 +67,3 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     }
 }
 
-// Export the GET function for the API route

@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { ColumnDef, createColumnHelper, flexRender, getCoreRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
 import { Input } from '../ui/input';
 import SortingSelect from './sorting-select';
-import { PaymentStatus, User } from '@/app/api/(admin)/users-table/route';
+import { PaymentStatus, User } from '@/app/api/(admin)/users-table/types';
 import { useUsers } from '@/lib/tenstack-hooks/admin-user-table';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Badge, badgeVariants } from '../ui/badge';

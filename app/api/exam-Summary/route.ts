@@ -5,22 +5,9 @@ import { kv } from '@vercel/kv';
 import { safeKVOperation } from '../../../lib/api/redis/safeKvOperation';
 import { getExamIdForUser } from '@/lib/api/redis/exam-id';
 import { getUserId } from '@/lib/auth/utils';
+import { ExamInstructionsProps, SubjectName } from './types';
 
-enum SubjectName {
-    English = 'English',
-    GeneralStudies = 'General Studies',
-    Mathematics = 'Mathematics',
-}
 
-export interface ExamSubject {
-    name: SubjectName;
-    questionCount: number;
-}
-
-export interface ExamInstructionsProps {
-    subjects: ExamSubject[];
-    examDuration: number; // in minutes
-}
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
     const userId = getUserId();
