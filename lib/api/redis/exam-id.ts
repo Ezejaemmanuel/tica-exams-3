@@ -5,17 +5,22 @@ export const EXAM_IDS_CACHE_KEY = "tica:all-exam-ids";
 
 // Function to retrieve all examIds with caching
 
-export async function getAllExamIds(): Promise<string[]> {
 
+// Function to retrieve all examIds with caching
+export async function getAllExamIds(): Promise<string[]> {
     // Try to get the examIds from the cache
 
     // If the examIds are not in the cache, fetch them from the database
     console.log('ExamIds not found in cache, fetching from database');
+
+    // Convert current date to the start of the day in UTC
     const currentDate = new Date();
+    currentDate.setUTCHours(0, 0, 0, 0);
+
     const exams = await prisma.exam.findMany({
         where: {
             date: {
-                gte: currentDate, // Filter exams whose date is greater than or equal to the current date
+                gte: currentDate, // Filter exams whose date is greater than or equal to the current date in UTC
             },
         },
         select: {
@@ -25,14 +30,14 @@ export async function getAllExamIds(): Promise<string[]> {
 
     // Extract the examIds from the exams
     const examIds = exams.map(exam => exam.id);
-
+    console.log("this is theh exam ids array", examIds)
     // If examIds are found, store them in the cache
     if (!(examIds.length > 0)) {
         return [];
     }
     return examIds;
-
 }
+
 
 
 
