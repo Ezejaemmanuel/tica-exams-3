@@ -175,7 +175,7 @@ export async function GET(req: NextRequest) {
                 break;
             // Add other cases for different sort options
             default:
-                orderBy = { createdAt: 'asc' }; // Default sort option
+                orderBy = { createdAt: 'desc' }; // Default sort option
         }
 
         console.log('Fetching users from database...');
