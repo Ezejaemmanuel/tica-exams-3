@@ -61,7 +61,6 @@ export const UserQuestion: React.FC<UserQuestionProps> = ({ initialAcronym }) =>
     const currentSubject = useQuestionStore(state => state.currentSubject);
     const currentQuestionNumber = useQuestionStore(state => state.currentQuestionNumber);
     const currentAcronym = useQuestionStore(state => state.currentQuestionAcronym);
-    console.log("this is the useranswers inside of userquestion", userAnswers);
 
 
     // console.log("this is he user answers", userAnswers);
@@ -202,14 +201,7 @@ export const UserQuestion: React.FC<UserQuestionProps> = ({ initialAcronym }) =>
                     <AlertDialogDescription>
                         there is no exam yet
                     </AlertDialogDescription>
-                    {/* <AlertDialogFooter className="flex justify-end space-x-2 mt-4">
-                        <AlertDialogCancel asChild>
-                            <button className="px-4 py-2 rounded text-white bg-gray-500 hover:bg-gray-600">Cancel</button>
-                        </AlertDialogCancel>
-                        <AlertDialogAction asChild>
-                            <button className="px-4 py-2 rounded text-white bg-blue-500 hover:bg-blue-600" >Confirm</button>
-                        </AlertDialogAction>
-                    </AlertDialogFooter> */}
+
                 </AlertDialogContent>
             </AlertDialog>
         )
@@ -294,7 +286,7 @@ export const UserQuestion: React.FC<UserQuestionProps> = ({ initialAcronym }) =>
                         <Button
                             type="submit"
                             onClick={() => handleNavigate('prev')}
-                            className="w-full sm:w-1/3 text-white bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+                            className="w-full sm:w-1/3 text-white bg-green-600  text-xs md:text-md hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
                         >
                             Previous Question
                         </Button>

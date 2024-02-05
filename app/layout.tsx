@@ -38,7 +38,7 @@ export default function RootLayout({
 
           >
             <Providers>
-              <Suspense fallback={<div>loading</div>}>
+              <Suspense >
                 <CheckAuthenticatedUser />
               </Suspense>
               <Navbar />

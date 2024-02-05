@@ -10,7 +10,7 @@ const SideBarAndCo = () => {
         <>
 
             <BatteryStatus />
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense >
                 <ExamCountdown />
             </Suspense>
 
