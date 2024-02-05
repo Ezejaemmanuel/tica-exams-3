@@ -20,7 +20,7 @@ interface QuestionWithUserAnswer {
 // Function to fetch questions and add user answers
 export async function fetchQuestionsAndAddUserAnswers(userId: string, examId: string): Promise<QuestionWithUserAnswer[] | null> {
     console.log(`Starting to fetch questions and add user answers for userId: ${userId} and examId: ${examId}`);
-    const cacheKey = `questionsWithUserAnswers:${userId}:${examId}`;
+    const cacheKey = `tica:questionsWithUserAnswers:${userId}:${examId}`;
 
     try {
         // Attempt to retrieve questions with user answers from cache

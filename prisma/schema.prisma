@@ -51,7 +51,6 @@ model User {
   paymentConfirmation           PaymentConfirmation?
   userAuthId                    String               @unique
   userAuth                      UserAuth?            @relation(fields: [userAuthId], references: [id])
-  // New fields from form schema
   dateOfBaptism                 DateTime? // Optional, conversion needed from string to DateTime
   dateOfHolyCommunion           DateTime? // Optional, conversion needed from string to DateTime
   dateOfHolyConfirmation        DateTime? // Optional, conversion needed from string to DateTime
