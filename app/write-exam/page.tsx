@@ -8,7 +8,7 @@ const UserQuestionTest = () => {
     //     redirect("/sign-in")
     // }
     return (
-        <div className="w-full max-w-2xl p-6 bg-white rounded-lg shadow-md dark:bg-gray-800">
+        <div className="w-full max-w-2xl md:p-6 bg-white rounded-lg shadow-md dark:bg-gray-800">
             <Suspense fallback={<UserQuestionSkeleton />} >
                 <UserQuestion initialAcronym={'E-1'} />
             </Suspense>

@@ -85,7 +85,7 @@ const ExamCountdown: React.FC = () => {
             }}
             renderer={({ days, hours, minutes, seconds, completed }) => {
                 if (completed) {
-                    return <span className="inline-flex fixed top-24 left-16 md:left-1/3 transform -translate-x-1/2 px-3 py-0.5 rounded-full text-sm font-medium bg-green-500 text-white z-10">
+                    return <span className="inline-flex fixed top-24 left-16 md:left-1/3 transform -translate-x-1/2 px-3 py-0.5 rounded-full text-xs md:text-sm font-medium bg-green-500 text-white z-10">
                         Exam Finished
                     </span>
                 } else {
@@ -94,8 +94,8 @@ const ExamCountdown: React.FC = () => {
                     const pulseClass = totalMinutes <= 10 ? 'animate-pulse' : '';
                     return (
                         <div>
-                            <span className={`inline-flex fixed top-24 left-16 md:left-1/3 transform -translate-x-1/2 px-3 py-0.5 rounded-full text-sm font-medium ${bgColorClass} text-white z-10 ${pulseClass}`}>
-                                Timer left:
+                            <span className={`inline-flex fixed top-30 md:top-24 left-16 md:left-1/3 transform -translate-x-1/2 px-3 py-0.5 rounded-full text-xs md:text-sm font-medium ${bgColorClass} text-white z-10 ${pulseClass}`}>
+                                Time left:
                                 <span className="font-mono ml-1"> {timeLeft} </span>
                             </span>
                         </div>

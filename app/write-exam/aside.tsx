@@ -242,12 +242,12 @@ export const UserQuestion: React.FC<UserQuestionProps> = ({ initialAcronym }) =>
     return (
         <>
             <Form {...form} >
-                <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-2xl  p-6 bg-white rounded-lg shadow-md dark:bg-gray-800">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-2xl  md:p-6 bg-white rounded-lg shadow-md dark:bg-gray-800">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Question {currentQuestionNumber}</h2>
-                        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{currentSubject}</h2>
+                        <h2 className="md:text-xl text-sm  font-bold text-gray-900 dark:text-gray-100">Question {currentQuestionNumber}</h2>
+                        <h2 className="md:text-xl text-sm font-bold text-gray-900 dark:text-gray-100">{currentSubject}</h2>
                     </div>
-                    <p className="mt-2 text-gray-600 dark:text-gray-400">{data.question}</p>
+                    <p className="mt-2 text-gray-600 text-xs md:text-sm dark:text-gray-400">{data.question}</p>
                     <FormField
                         control={form.control}
                         name="selectedOption"
@@ -322,7 +322,7 @@ export const UserQuestion: React.FC<UserQuestionProps> = ({ initialAcronym }) =>
                         <Button
                             type="button"
                             onClick={handleSubmitButtonClick}
-                            className="fixed  bottom-[5%] left-[30%] w-auto sm:w-auto px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                            className="fixed bottom-2 left-2  md:bottom-[5%] md:left-[30%]  w-auto sm:w-auto px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
                         >
                             Submit
                         </Button>
