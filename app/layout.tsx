@@ -10,7 +10,7 @@ import { Providers } from './provider';
 import AdminMessage from './adminMessage';
 import { CheckAuthenticatedUser } from './exam-countdown';
 import { Suspense } from 'react';
-
+import { Analytics } from '@vercel/analytics/react';
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
@@ -44,6 +44,7 @@ export default function RootLayout({
 
               <AdminMessage />
               {children}
+              <Analytics />
               <Footer />
               <Toaster richColors duration={7000} className='text-yellow-500' />
             </Providers>

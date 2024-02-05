@@ -1,18 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/db';
+import { Option } from '@prisma/client';
 import { englishQuestions } from './english';
 import { generalKnowledgeQuestions } from './general';
 import { mathQuestions } from './maths';
-import { prisma } from '@/lib/db';
-import { Option } from '@prisma/client';
+
 export async function GET(request: NextRequest) {
     try {
-        const selectedExamId = "JSS2-feb-2024-jss2_first_exam";
+        // Fetch all examIds from the database
+        const exams = await prisma.exam.findMany({
+            select: {
+                id: true, // Only select the id field
+            },
+        });
 
-        await createQuestions(selectedExamId);
+        // For each exam, create the questions
+        for (const exam of exams) {
+            await createQuestions(exam.id);
+        }
 
-        return NextResponse.json({ message: "Data generation completed successfully." }, { status: 200 });
+        return NextResponse.json({ message: "Data generation completed successfully for all exams." }, { status: 200 });
     } catch (error) {
-        console.error('Failed to create user auth:', error);
+        console.error('Failed to create questions:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }
@@ -21,6 +30,7 @@ async function createQuestions(selectedExamId: string) {
     const questionCreatedAt = new Date();
     const questionUpdatedAt = new Date();
 
+    // Create English questions
     for (const question of englishQuestions) {
         await prisma.englishQuestion.create({
             data: {
@@ -29,7 +39,7 @@ async function createQuestions(selectedExamId: string) {
                 optionB: question.optionB,
                 optionC: question.optionC,
                 optionD: question.optionD,
-                correctAnswer: Option.A,
+                correctAnswer: Option.A, // Assuming correct answer is always Option A for simplicity
                 examId: selectedExamId,
                 createdAt: questionCreatedAt,
                 updatedAt: questionUpdatedAt,
@@ -37,6 +47,7 @@ async function createQuestions(selectedExamId: string) {
         });
     }
 
+    // Create Math questions
     for (const question of mathQuestions) {
         await prisma.mathQuestion.create({
             data: {
@@ -45,7 +56,7 @@ async function createQuestions(selectedExamId: string) {
                 optionB: question.optionB,
                 optionC: question.optionC,
                 optionD: question.optionD,
-                correctAnswer: Option.A,
+                correctAnswer: Option.A, // Assuming correct answer is always Option A for simplicity
                 examId: selectedExamId,
                 createdAt: questionCreatedAt,
                 updatedAt: questionUpdatedAt,
@@ -53,6 +64,7 @@ async function createQuestions(selectedExamId: string) {
         });
     }
 
+    // Create General Knowledge questions
     for (const question of generalKnowledgeQuestions) {
         await prisma.generalStudiesQuestion.create({
             data: {
@@ -61,7 +73,7 @@ async function createQuestions(selectedExamId: string) {
                 optionB: question.optionB,
                 optionC: question.optionC,
                 optionD: question.optionD,
-                correctAnswer: Option.A,
+                correctAnswer: Option.A, // Assuming correct answer is always Option A for simplicity
                 examId: selectedExamId,
                 createdAt: questionCreatedAt,
                 updatedAt: questionUpdatedAt,
@@ -69,3 +81,5 @@ async function createQuestions(selectedExamId: string) {
         });
     }
 }
+
+export const dynamic = "force-dynamic"
