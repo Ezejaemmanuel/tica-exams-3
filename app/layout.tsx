@@ -10,6 +10,7 @@ import { Providers } from './provider';
 import AdminMessage from './adminMessage';
 import { CheckAuthenticatedUser } from './exam-countdown';
 import { Suspense } from 'react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/react';
 const inter = Inter({ subsets: ['latin'] })
 
@@ -45,6 +46,7 @@ export default function RootLayout({
               <AdminMessage />
               {children}
               <Analytics />
+              <SpeedInsights />
               <Footer />
               <Toaster richColors duration={7000} className='text-yellow-500' />
             </Providers>
