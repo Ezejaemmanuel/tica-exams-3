@@ -20,7 +20,7 @@ export default function MainContents() {
     };
     console.log("this is hte userinfo", userInfo);
     const renderSubmissionStatusCard = () => {
-        if (!userInfo || userInfo.submissionStatus === null) return null;
+        if (!userInfo || !userInfo.submissionStatus) return null;
         const submissionStatusMessage = userInfo.submissionStatus === 'UnsubmittedExam' ?
             <p className="text-red-500 text-2xl animate-pulse">You have unsubmitted exams.<Link href={'/calculateResult'}><Badge className=''>submit</Badge></Link></p> :
             <p>All exams submitted.</p>;
