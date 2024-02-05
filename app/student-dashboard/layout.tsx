@@ -1,10 +1,8 @@
 import type { Metadata } from 'next'
 import SideBarNavigation from './sideBar'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { HamburgerMenuIcon, BellIcon } from '@radix-ui/react-icons'
 import { FaMailBulk } from 'react-icons/fa'
-import { Suspense } from 'react'
-import { CardSkeleton } from './cardsSkeleton'
+import SheetSide from './sheet'
 
 
 export const metadata: Metadata = {
@@ -22,16 +20,7 @@ export default function RootLayout({
             <header className="flex items-center justify-between p-4  border-b shadow-md ">
                 <div className="flex items-center space-x-4">
 
-                    <Sheet >
-                        <SheetTrigger>
-                            <button className="lg:hidden">
-                                <HamburgerMenuIcon className="w-6 h-6 text-gray-500 dark:text-gray-400" />
-                            </button>
-                        </SheetTrigger>
-                        <SheetContent side={"left"} >
-                            <SideBarNavigation className={"mt-24"} />
-                        </SheetContent>
-                    </Sheet>
+                    <SheetSide />
 
                     <h1 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Student Dashboard</h1>
                 </div>

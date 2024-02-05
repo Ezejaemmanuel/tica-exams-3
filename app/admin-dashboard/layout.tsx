@@ -5,6 +5,7 @@ import { FaMailBulk } from "react-icons/fa";
 import AdminDashboardFromSizeLimiter from "./size-boundry";
 import { checkAuthPermission } from "@/lib/auth/utils";
 import SideBarNavigation from "@/components/admin-dashboard/sidebar";
+import SheetSide from "./sheetAside";
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
     await checkAuthPermission("only_admin_and_superadmin")
@@ -13,16 +14,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <div className="flex flex-col mt-8 min-h-screen ">
                 <header className="flex items-center justify-between p-4 border-b shadow-md ">
                     <div className="flex items-center space-x-4">
-                        <Sheet >
-                            <SheetTrigger>
-                                <button className="">
-                                    <HamburgerMenuIcon className="w-6 h-6 text-gray-500 dark:text-gray-400" />
-                                </button>
-                            </SheetTrigger>
-                            <SheetContent side={"left"} >
-                                <SideBarNavigation className={"mt-24"} />
-                            </SheetContent>
-                        </Sheet>
+                        <SheetSide />
                         <h1 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Student Dashboard</h1>
                     </div>
                     <div className="flex items-center space-x-4">
