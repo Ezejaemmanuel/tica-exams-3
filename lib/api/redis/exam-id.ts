@@ -5,7 +5,7 @@ export const EXAM_IDS_CACHE_KEY = "tica:all-exam-ids";
 
 // Function to retrieve all examIds with caching
 
-export async function getAllExamIds(): Promise<string[] | null> {
+export async function getAllExamIds(): Promise<string[]> {
 
     // Try to get the examIds from the cache
 
@@ -28,7 +28,7 @@ export async function getAllExamIds(): Promise<string[] | null> {
 
     // If examIds are found, store them in the cache
     if (!(examIds.length > 0)) {
-        return null;
+        return [];
     }
     return examIds;
 
