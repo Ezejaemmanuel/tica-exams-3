@@ -242,7 +242,7 @@ export const UserQuestion: React.FC<UserQuestionProps> = ({ initialAcronym }) =>
     return (
         <>
             <Form {...form} >
-                <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-2xl  md:p-6 bg-white rounded-lg shadow-md dark:bg-gray-800">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-2xl  p-6 bg-white rounded-lg shadow-md dark:bg-gray-800">
                     <div className="flex items-center justify-between">
                         <h2 className="md:text-xl text-sm  font-bold text-gray-900 dark:text-gray-100">Question {currentQuestionNumber}</h2>
                         <h2 className="md:text-xl text-sm font-bold text-gray-900 dark:text-gray-100">{currentSubject}</h2>
@@ -305,7 +305,7 @@ export const UserQuestion: React.FC<UserQuestionProps> = ({ initialAcronym }) =>
                                     handleNavigate('next'); // Assuming this function handles the submit action
                                     toggleSubmitMode(false); // Switch back to normal mode after submission
                                 }}
-                                className="w-full sm:w-1/3 text-white bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 animate-pulse"
+                                className="w-full sm:w-1/3 text-white bg-red-600 text-xs md:text-md hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 animate-pulse"
                             >
                                 Submit
                             </Button>
@@ -313,7 +313,7 @@ export const UserQuestion: React.FC<UserQuestionProps> = ({ initialAcronym }) =>
                             <Button
                                 type="submit"
                                 onClick={() => handleNavigate('next')}
-                                className="w-full sm:w-1/3 text-white bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+                                className="w-full sm:w-1/3 text-white bg-green-600 text-xs md:text-md hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
                             >
                                 Next Question
                             </Button>
@@ -322,7 +322,7 @@ export const UserQuestion: React.FC<UserQuestionProps> = ({ initialAcronym }) =>
                         <Button
                             type="button"
                             onClick={handleSubmitButtonClick}
-                            className="fixed bottom-2 left-2  md:bottom-[5%] md:left-[30%]  w-auto sm:w-auto px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                            className="fixed bottom-2 left-2  md:bottom-[5%] md:left-[30%] text-xs md:text-md  w-auto sm:w-auto px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
                         >
                             Submit
                         </Button>
