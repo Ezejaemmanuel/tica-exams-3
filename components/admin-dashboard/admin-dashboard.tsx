@@ -145,7 +145,7 @@ const TanStackTable = () => {
                 header: () => <span className="text-sm capitalize">English</span>,
                 cell: (info) => {
                     const value = info.getValue();
-                    return <span className='text-sm capitalize'>{value || 'N/A'}</span>
+                    return value ? <span className='text-sm capitalize'>{value}</span> : 'N/A'
                 },
             }),
             columnHelper.accessor((row) => row.result?.mathsScore, {
@@ -153,7 +153,8 @@ const TanStackTable = () => {
                 header: () => <span className="text-sm capitalize">Maths</span>,
                 cell: (info) => {
                     const value = info.getValue();
-                    return <span className='text-sm capitalize'>{value || 'N/A'}</span>
+                    return value ? <span className='text-sm capitalize'>{value}</span> : 'N/A'
+
                 },
             }),
             columnHelper.accessor((row) => row.result?.generalStudiesScore, {
@@ -161,7 +162,8 @@ const TanStackTable = () => {
                 header: () => <span className="text-sm capitalize">GS</span>,
                 cell: (info) => {
                     const value = info.getValue();
-                    return <span className='text-sm capitalize'>{value || 'N/A'}</span>
+                    return value ? <span className='text-sm capitalize'>{value}</span> : 'N/A'
+
                 },
             }),
             columnHelper.accessor((row) => row.result?.totalScore, {

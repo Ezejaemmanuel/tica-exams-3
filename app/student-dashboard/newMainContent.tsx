@@ -9,6 +9,7 @@ import { ExamStatusPage } from '@/components/exam-status/aside';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function MainContents() {
     const { data: userInfo, isLoading, isError } = useUserInfo();
@@ -46,7 +47,8 @@ export default function MainContents() {
                     classLevel={userInfo.classLevel.toLowerCase() as "jss1" | "ss1" | "jss2"} />
                 <Card className="flex flex-col items-center text-center bg-gray-100 dark:bg-gray-800 rounded-lg shadow-lg">
                     <Avatar className="w-32 h-32 mt-4">
-                        <AvatarImage alt="User Avatar" src={userInfo.candidateProfile || "/placeholder-avatar.jpg"} />
+                        {/* <AvatarImage alt="User Avatar" src={userInfo.candidateProfile || "/placeholder-avatar.jpg"} /> */}
+                        <Image src={userInfo.candidateProfile} alt={''} className='rounded-full ' height={70} width={70} />
                         <AvatarFallback>{userInfo.name}</AvatarFallback>
                     </Avatar>
                     <Button className="w-full px-4 py-2 text-white bg-yellow-500 rounded hover:bg-yellow-600 focus:outline-none focus:ring dark:bg-yellow-700 dark:hover:bg-yellow-800 sm:w-auto md:w-auto lg:w-auto xl:w-auto" name="button1" onClick={() => setIsOpen(true)}>Exam status</Button>
