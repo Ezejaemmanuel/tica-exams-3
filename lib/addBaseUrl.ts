@@ -22,6 +22,8 @@ export function addBaseURL(url: string): string {
         return `http://localhost:3000/${url}`;
     } else {
         if (vercelUrl) {
+            console.log("thsi is te vercel url inside of the if statment", vercelUrl);
+            console.log("this is hte constructed url ", `${vercelUrl}/${url}`);
             return `${vercelUrl}/${url}`;
         } else {
             throw new Error('VERCEL_URL or NEXT_PUBLIC_VERCEL_URL environment variable is not set');
