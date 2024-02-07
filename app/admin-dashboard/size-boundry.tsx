@@ -13,9 +13,9 @@ const AdminDashboardFromSizeLimiter: React.FC<AdminDashboardFromSizeLimiterProps
 
     const isMobile = width !== null && width < 650;
 
-    // if (isMobile) {
-    //     return <AlertDialogOnlyOnDesktop />;
-    // }
+    if (isMobile) {
+        return <AlertDialogOnlyOnDesktop />;
+    }
 
     return <>{children}</>;
 };
