@@ -45,23 +45,23 @@ const TanStackTable = () => {
         const columnHelper = createColumnHelper<User>();
 
         return [
-            columnHelper.accessor((_row, index) => index + 1, {
-                id: 'serial',
-                header: () => <span className="text-sm capitalize">S/N</span>,
-                cell: (info) => {
-                    const value = info.getValue();
-                    return <span className=''>{value}</span>;
-                },
-            }),
+            // columnHelper.accessor((_row, index) => index + 1, {
+            //     id: 'serial',
+            //     header: () => <span className="text-sm capitalize">S/N</span>,
+            //     cell: (info) => {
+            //         const value = info.getValue();
+            //         return <span className=''>{value}</span>;
+            //     },
+            // }),
             columnHelper.accessor((row) => row.name, {
                 id: 'name',
-                header: () => <span className="text-sm capitalize">Name</span>,
+                header: () => <span className="text-xs capitalize">Name</span>,
                 cell: (info) => {
                     const value = info.getValue();
                     const userId = info.row.original.id; // Assuming the user ID is stored in `id` property
                     console.log("this is the name of the user: ", value);
                     return (
-                        <Link href={`/admin-student-dashboard?userId=${userId}`} passHref className='text-sm   hover:underline'>
+                        <Link href={`/admin-student-dashboard?userId=${userId}`} passHref className='text-xs   hover:underline'>
                             {value}
                         </Link>
                     );
@@ -69,49 +69,49 @@ const TanStackTable = () => {
             }),
 
 
-            columnHelper.accessor((row) => row.candidateProfile, {
-                id: 'candidateProfile',
-                header: () => <span className="text-sm capitalize">Image</span>,
-                cell: (info) => {
-                    const value = info.getValue();
-                    return <Image
-                        src={value}
-                        height={10}
-                        width={10}
-                        alt="..."
-                        className="rounded-full w-10 h-10 object-cover"
-                    />
-                },
-            }),
+            // columnHelper.accessor((row) => row.candidateProfile, {
+            //     id: 'candidateProfile',
+            //     header: () => <span className="text-sm capitalize">Image</span>,
+            //     cell: (info) => {
+            //         const value = info.getValue();
+            //         return <Image
+            //             src={value}
+            //             height={10}
+            //             width={10}
+            //             alt="..."
+            //             className="rounded-full w-10 h-10 object-cover"
+            //         />
+            //     },
+            // }),
             columnHelper.accessor((row) => row.class, {
                 id: 'class',
-                header: () => <span className="text-sm capitalize">Class</span>,
+                header: () => <span className="text-xs capitalize">Class</span>,
                 cell: (info) => {
                     const value = info.getValue();
                     return value ? <Badge className='text-xs'>{value}</Badge> : 'N/A'
 
                 },
             }),
-            columnHelper.accessor((row) => row.createdAt, {
-                id: 'createdAt',
-                header: () => <span className="text-sm capitalize">Registered At</span>,
-                cell: (info) => {
-                    const dateValue = new Date(info.getValue());
-                    return dateValue.toLocaleDateString('en-US');
-                },
-            }),
-            columnHelper.accessor((row) => row.paymentConfirmation?.updatedAt, {
-                id: 'paymentConfirmationUpdatedAt',
-                header: () => <span className="text-sm capitalize">Made Payment On</span>,
-                cell: (info) => {
-                    const value = info.getValue();
-                    const dateValue = value !== undefined ? new Date(value) : null;
-                    return dateValue ? dateValue.toLocaleDateString('en-US') : 'N/A';
-                },
-            }),
+            // columnHelper.accessor((row) => row.createdAt, {
+            //     id: 'createdAt',
+            //     header: () => <span className="text-sm capitalize">Registered At</span>,
+            //     cell: (info) => {
+            //         const dateValue = new Date(info.getValue());
+            //         return dateValue.toLocaleDateString('en-US');
+            //     },
+            // }),
+            // columnHelper.accessor((row) => row.paymentConfirmation?.updatedAt, {
+            //     id: 'paymentConfirmationUpdatedAt',
+            //     header: () => <span className="text-sm capitalize">Made Payment On</span>,
+            //     cell: (info) => {
+            //         const value = info.getValue();
+            //         const dateValue = value !== undefined ? new Date(value) : null;
+            //         return dateValue ? dateValue.toLocaleDateString('en-US') : 'N/A';
+            //     },
+            // }),
             columnHelper.accessor((row) => row.paymentStatus, {
                 id: 'paymentStatus',
-                header: () => <span className="text-sm capitalize">Payment Status</span>,
+                header: () => <span className="text-xs capitalize">Payment Status</span>,
                 cell: (info) => {
                     // const router = useRouter(); // Initialize the router
                     const paymentStatus = info.getValue();
@@ -140,55 +140,55 @@ const TanStackTable = () => {
                     );
                 },
             }),
-            columnHelper.accessor((row) => row.result?.englishScore, {
-                id: 'englishScore',
-                header: () => <span className="text-sm capitalize">English</span>,
-                cell: (info) => {
-                    const value = info.getValue();
-                    return value ? <span className='text-sm capitalize'>{value}</span> : 'N/A'
-                },
-            }),
-            columnHelper.accessor((row) => row.result?.mathsScore, {
-                id: 'englishScore',
-                header: () => <span className="text-sm capitalize">Maths</span>,
-                cell: (info) => {
-                    const value = info.getValue();
-                    return value ? <span className='text-sm capitalize'>{value}</span> : 'N/A'
+            // columnHelper.accessor((row) => row.result?.englishScore, {
+            //     id: 'englishScore',
+            //     header: () => <span className="text-sm capitalize">English</span>,
+            //     cell: (info) => {
+            //         const value = info.getValue();
+            //         return value ? <span className='text-sm capitalize'>{value}</span> : 'N/A'
+            //     },
+            // }),
+            // columnHelper.accessor((row) => row.result?.mathsScore, {
+            //     id: 'englishScore',
+            //     header: () => <span className="text-sm capitalize">Maths</span>,
+            //     cell: (info) => {
+            //         const value = info.getValue();
+            //         return value ? <span className='text-sm capitalize'>{value}</span> : 'N/A'
 
-                },
-            }),
-            columnHelper.accessor((row) => row.result?.generalStudiesScore, {
-                id: 'englishScore',
-                header: () => <span className="text-sm capitalize">GS</span>,
-                cell: (info) => {
-                    const value = info.getValue();
-                    return value ? <span className='text-sm capitalize'>{value}</span> : 'N/A'
+            //     },
+            // }),
+            // columnHelper.accessor((row) => row.result?.generalStudiesScore, {
+            //     id: 'englishScore',
+            //     header: () => <span className="text-sm capitalize">GS</span>,
+            //     cell: (info) => {
+            //         const value = info.getValue();
+            //         return value ? <span className='text-sm capitalize'>{value}</span> : 'N/A'
 
-                },
-            }),
+            //     },
+            // }),
             columnHelper.accessor((row) => row.result?.totalScore, {
                 id: 'resultTotalScore',
-                header: () => <span className="text-sm capitalize">Total Score</span>,
-                cell: (info) => info.getValue() ?? 'N/A',
+                header: () => <span className="text-xs capitalize">Total Score</span>,
+                cell: (info) => info.getValue() ?? '',
             }),
-            columnHelper.accessor((row) => row.result?.position, {
-                id: 'resultPosition',
-                header: () => <span className="text-sm capitalize">Position</span>,
-                cell: (info) => info.getValue() ?? 'N/A',
-            }),
-            columnHelper.accessor((row) => row.result?.passed, {
-                id: 'resultPassed',
-                header: () => <span className="text-sm capitalize">Passed</span>,
-                cell: (info) => {
-                    const passed = info.getValue();
-                    const bgColor = passed ? 'bg-green-200' : 'bg-red-200';
-                    return (
-                        <Badge className={`${bgColor} p-1 text-xs rounded`}>
-                            {passed ? 'Yes' : 'No'}
-                        </Badge>
-                    );
-                },
-            }),
+            // columnHelper.accessor((row) => row.result?.position, {
+            //     id: 'resultPosition',
+            //     header: () => <span className="text-sm capitalize">Position</span>,
+            //     cell: (info) => info.getValue() ?? 'N/A',
+            // }),
+            // columnHelper.accessor((row) => row.result?.passed, {
+            //     id: 'resultPassed',
+            //     header: () => <span className="text-sm capitalize">Passed</span>,
+            //     cell: (info) => {
+            //         const passed = info.getValue();
+            //         const bgColor = passed ? 'bg-green-200' : 'bg-red-200';
+            //         return (
+            //             <Badge className={`${bgColor} p-1 text-xs rounded`}>
+            //                 {passed ? 'Yes' : 'No'}
+            //             </Badge>
+            //         );
+            //     },
+            // }),
             // Add more columns as needed
         ];
     }, [sort, order, search, paymentFilter]);

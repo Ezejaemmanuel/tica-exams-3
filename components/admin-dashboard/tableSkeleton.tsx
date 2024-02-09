@@ -14,7 +14,7 @@ const TableSkeleton: React.FC<TableSkeletonProps> = ({ rows, columns }) => {
                 <Skeleton className="h-10 rounded-md" />
             </div>
             {/* Skeleton for the table */}
-            <div className="overflow-hidden rounded-lg shadow">
+            <div className=" rounded-lg shadow">
                 <table className="min-w-full ">
                     <thead>
                         <tr>

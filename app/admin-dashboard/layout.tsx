@@ -15,7 +15,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <header className="flex items-center justify-between p-4 border-b shadow-md ">
                     <div className="flex items-center space-x-4">
                         <SheetSide />
-                        <h1 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Student Dashboard</h1>
+                        <h1 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Admin Dashboard</h1>
                     </div>
                     <div className="flex items-center space-x-4">
                         <BellIcon className="w-6 h-6 text-gray-500 dark:text-gray-400" />

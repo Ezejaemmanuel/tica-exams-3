@@ -5,10 +5,12 @@ import { checkAuthPermission } from '@/lib/auth/utils';
 
 const AdminDashboardPage = async () => {
     await checkAuthPermission("only_admin_and_superadmin");
-
+    // fallback = {< TableSkeleton rows = { 40} columns = { 10} />}
     return (
-        <Suspense fallback={<TableSkeleton rows={40} columns={10} />}>
-            <AdminDashboard />
+        <Suspense >
+            <div className='overflow-x-auto'>
+                <AdminDashboard />
+            </div>
         </Suspense>
     )
 }
