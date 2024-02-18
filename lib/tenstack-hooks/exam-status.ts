@@ -45,31 +45,27 @@ const fetchExamStatus = async (): Promise<ExamStatusKVValue | null> => {
     const { examStatusData, setExamStatusData } = useExamStatusStore.getState();
     console.log("this is the exam status returned from Zustand", examStatusData);
 
-    if (examStatusData) {
-        console.log('Using cached exam status data from Zustand store');
-        return calculateExamStatus(examStatusData);
-    } else {
-        console.log('Fetching exam status data from backend');
-        const url = addBaseURL(`api/exam-status`);
-        const response = await fetch(url, { cache: "no-store" });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData);
-        }
+    console.log('Fetching exam status data from backend');
+    const url = addBaseURL(`api/exam-status`);
+    const response = await fetch(url, { cache: "no-store" });
 
-        const newData: ExamStatusZustand = await response.json();
-        setExamStatusData(newData, 2); // Update Zustand store with new data
-
-        // Check if the backend returned data with a status property
-        if ('status' in newData) {
-            throw new Error('Backend data should not include a status property');
-        }
-
-        console.log("this is the exam status data", newData);
-        const updatedData = calculateExamStatus(newData);
-        return updatedData;
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData);
     }
+
+    const newData: ExamStatusZustand = await response.json();
+    setExamStatusData(newData, 2); // Update Zustand store with new data
+
+    // Check if the backend returned data with a status property
+    if ('status' in newData) {
+        throw new Error('Backend data should not include a status property');
+    }
+
+    console.log("this is the exam status data", newData);
+    const updatedData = calculateExamStatus(newData);
+    return updatedData;
 };
 
 export function useExamStatus(): UseQueryResult<ExamStatusKVValue, Error> {
