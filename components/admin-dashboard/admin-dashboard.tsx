@@ -100,15 +100,6 @@ const TanStackTable = () => {
                     return dateValue.toLocaleDateString('en-US');
                 },
             }),
-            columnHelper.accessor((row) => row.paymentConfirmation?.updatedAt, {
-                id: 'paymentConfirmationUpdatedAt',
-                header: () => <span className="text-sm capitalize">Made Payment On</span>,
-                cell: (info) => {
-                    const value = info.getValue();
-                    const dateValue = value !== undefined ? new Date(value) : null;
-                    return dateValue ? dateValue.toLocaleDateString('en-US') : 'N/A';
-                },
-            }),
             columnHelper.accessor((row) => row.paymentStatus, {
                 id: 'paymentStatus',
                 header: () => <span className="text-xs capitalize">Payment Status</span>,

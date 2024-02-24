@@ -189,7 +189,12 @@ export async function GET(req: NextRequest) {
             take: pageSize,
             skip: skip,
             orderBy: orderBy,
-            include: {
+            select: {
+                id: true,
+                name: true,
+                class: true,
+                candidateProfile: true,
+                createdAt: true,
                 paymentConfirmation: {
                     select: {
                         paymentUrl: true,
@@ -200,16 +205,24 @@ export async function GET(req: NextRequest) {
                 userAuth: {
                     select: {
                         role: true,
+                        imageUrl: true, // Assuming you want the imageUrl from userAuth as well
                     },
                 },
                 result: {
                     select: {
                         totalScore: true,
+                        englishScore: true,
+                        mathsScore: true,
+                        generalStudiesScore: true,
+                        aggregate: true,
+                        createdAt: true,
+                        position: true,
                         passed: true,
                     },
                 },
             },
         });
+
         console.log('Users fetched:', users);
 
         console.log('Computing payment status for each user...');

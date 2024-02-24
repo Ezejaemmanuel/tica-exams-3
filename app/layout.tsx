@@ -28,7 +28,28 @@ export default function RootLayout({
 
     <html lang="en">
       <body className={inter.className}>
-        <ClerkProvider>
+        <ClerkProvider
+
+          appearance={{
+            elements: {
+              // Styling primary buttons with a green color and dark mode aesthetics
+              formButtonPrimary: "bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded text-sm",
+              // Styling input fields for dark mode with a focus state in green
+              input: "bg-gray-700 border border-gray-600 text-white focus:ring-2 focus:ring-green-500 focus:border-transparent rounded-lg text-sm",
+              // Styling labels for dark mode with a lighter text color for contrast
+              label: "text-gray-300 font-semibold text-sm",
+
+              // Additional elements can be styled here to match the dark mode theme
+            },
+            // Defining global variables for dark mode and green as the primary color
+            variables: {
+              colorPrimary: '#10b981', // Using Tailwind's green-500 as the primary color
+              colorBackground: '#1f2937', // Using Tailwind's gray-800 for background color in dark mode
+              colorText: '#f9fafb', // Using a light color for text in dark mode for contrast
+              borderRadius: "10px",
+              fontSize: "14px"
+            },
+          }}>
 
           <ThemeProvider
             attribute="class"
